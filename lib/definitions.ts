@@ -5,7 +5,6 @@ export type User = {
     hashedPassword: string;
 };
 
-
 export type Store = {
     id: string;
     name: string;

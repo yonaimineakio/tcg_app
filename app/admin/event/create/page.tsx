@@ -1,5 +1,5 @@
 export default async function Page() {
   return (
-    <h1>This is event create Page</h1>
+    <h1>This is Event create Page</h1>
   )
 }

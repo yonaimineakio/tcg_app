@@ -1,6 +1,6 @@
 export default function Page() {
     return (
-      <h1>This is admin Page</h1>
+      <h1>This is Admin Page</h1>
     )
   }
   

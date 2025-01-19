@@ -4,6 +4,6 @@
 
 export default function Page() {
   return (
-    <h1>This is index Page</h1>
+    <h1>This is TCG App Index Page</h1>
   )
 }

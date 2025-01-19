@@ -3,6 +3,6 @@ export default async function Page(props: {params : Promise<{id: string}>}) {
   const id = params.id
 
   return (
-    <h1>This is myPage edit Page{id}</h1>
+    <h1>This is MyPage edit Page{id}</h1>
   )
 }
