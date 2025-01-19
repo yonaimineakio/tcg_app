@@ -1,17 +1,17 @@
-
-import FullCalendar from '@fullcalendar/react'
+import FullCalendar from '@fullcalendar/react';
+import { EventClickArg } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid' // a plugin!
 import interactionPlugin from "@fullcalendar/interaction" // needed for dayClick
 import listPlugin from '@fullcalendar/list';
 
 export default function Calender() {
 
-  const handleEventClick = (clickInfo: any) => {
+  const handleEventClick = (clickInfo: EventClickArg) => {
     alert(`イベント名: ${clickInfo.event.title}\n開始時刻: ${clickInfo.event.startStr}\n終了時刻: ${clickInfo.event.endStr || 'なし'}`);
   };
 
   const handleDateClick = () => {
-    alert(`date Click`);
+    alert(`date clicked`);
   };
 
 
