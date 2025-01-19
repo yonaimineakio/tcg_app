@@ -10,7 +10,7 @@ export default function Calender() {
     alert(`イベント名: ${clickInfo.event.title}\n開始時刻: ${clickInfo.event.startStr}\n終了時刻: ${clickInfo.event.endStr || 'なし'}`);
   };
 
-  const handleDateClick = (clickInfo: any) => {
+  const handleDateClick = () => {
     alert(`date Click`);
   };
 
