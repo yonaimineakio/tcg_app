@@ -110,9 +110,10 @@ export async function GET() {
       await sql(`COMMIT`);
 
       return Response.json({ message: 'Database seeded successfully' });
-    } catch (error: any) {
+    } catch (error: unknown) {
       await sql(`ROLLBACK`);
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred';
       console.error('Error seeding database:', error);
-      return Response.json({ error: error.message }, { status: 500 });
+      return Response.json({ error: errorMessage }, { status: 500 });
     }
   }

@@ -60,8 +60,8 @@ export default function LoginForm() {
           </div>
         </div>
         <input type="hidden" name="redirectTo" value={callbackUrl} />
-        <button  className="mt-4 w-full">
-          Log in
+        <button  className="mt-4 w-full" disabled={isPending} type="submit">
+          {isPending ? 'Logging in...' : 'Log in'}
         </button>
         <div
           className="flex h-8 items-end space-x-1"
