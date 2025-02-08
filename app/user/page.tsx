@@ -1,6 +1,12 @@
+'use client';
+
+import Calender from "@/components/Calender/FullCalendarWrapper"
+
 export default function Page() {
     return (
-      <h1>This is User Index Page</h1>
+      <div>
+          <Calender/>
+      </div>
     )
   }
   

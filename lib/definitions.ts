@@ -23,7 +23,7 @@ export type Notification = {
     storeId: string;
 };
 
-export type Event = {
+export type CalendarEvent = {
     id: string;
     title: string;
     description: string;
