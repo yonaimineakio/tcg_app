@@ -71,6 +71,14 @@ export const users = [
       endAt: '2025-01-22T17:00:00',
       storeId: 'store2',
     },
+    {
+      id: uuidv4(),
+      title: 'Tech Meetup2',
+      description: 'Discuss the latest in technology.',
+      startAt: '2025-02-21T15:00:00',
+      endAt: '2025-02-21T17:00:00',
+      storeId: 'store2',
+    },
   ];
   
   export  { stores, notifications, events };

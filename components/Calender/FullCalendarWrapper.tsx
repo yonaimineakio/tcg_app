@@ -1,11 +1,14 @@
+import jaLocale from "@fullcalendar/core/locales/ja";  // 日本語ロケールをインポート
 import FullCalendar from '@fullcalendar/react';
 import { EventClickArg } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from "@fullcalendar/interaction";
-import listPlugin from '@fullcalendar/list';
 import { getEvents } from '@/lib/data';
 import { useState, useEffect } from 'react';
 import type { CalendarEvent } from '@/lib/definitions';
+// import { library } from "@fortawesome/fontawesome-svg-core";
+import { faCoffee, faRunning } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 export default function Calender() {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -33,24 +36,31 @@ export default function Calender() {
   };
 
   return (
+    <div className="calendar-container">
     <FullCalendar
-      plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
+      plugins={[dayGridPlugin, interactionPlugin]}
       initialView="dayGridMonth"
+      locales={[jaLocale]}
+      locale="ja"
       headerToolbar={{
         left: 'prev,next today',
         center: 'title',
-        right: 'dayGridMonth,listWeek', // 表示切り替えボタン
+        right: 'dayGridMonth', // 表示切り替えボタン
       }}
+      titleFormat={{ year: 'numeric', month: 'long' }}
       events={events}
+      eventContent={function (arg) { 
+        return (
+          <div>
+            <FontAwesomeIcon icon={faCoffee} />
+            <span>{arg.timeText}</span>
+            <span>{arg.event.title}</span>
+          </div>
+        );
+      }}
       eventClick={handleEventClick}
       dateClick={handleDateClick}
     />
+    </div>
   );
 }
-
-
-//         events={[
-//           { title: 'ミーティング', start: '2025-01-13T10:00:00', end: '2025-01-14T11:00:00' },
-//           { title: 'ランチ', start: '2025-01-16T12:30:00', end: '2025-01-16T13:30:00' },
-//           { title: 'プレゼン準備', start: '2025-01-17T15:00:00', end: '2025-01-17T16:30:00' },
-//         ]}

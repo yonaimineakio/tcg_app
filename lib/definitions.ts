@@ -3,6 +3,7 @@ export type User = {
     name: string;
     email: string;
     hashedPassword: string;
+    isAdmin: boolean;
 };
 
 export type Store = {
@@ -27,8 +28,8 @@ export type CalendarEvent = {
     id: string;
     title: string;
     description: string;
-    startAt: string;
-    endAt: string;
+    start: string;
+    end: string;
     storeId: string;
     //繰り返し設定は後ほど検討。
 }

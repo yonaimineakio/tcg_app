@@ -13,6 +13,7 @@ export async function getUser(email: string): Promise<User | null> {
             name: result[0].name,
             email: result[0].email,
             hashedPassword: result[0].password,
+            isAdmin: result[0].isAdmin,
         };
     
         return user;
@@ -23,6 +24,7 @@ export async function getUser(email: string): Promise<User | null> {
 
 }
 export async function getEvents(): Promise<CalendarEvent[] | null> {
+
     try {
         const result = await sql(`SELECT * FROM events`)
 
@@ -32,8 +34,8 @@ export async function getEvents(): Promise<CalendarEvent[] | null> {
             id: event.id,
             title: event.title,
             description: event.description,
-            startAt: event.startAt,
-            endAt: event.endAt,
+            start: date2String(event.startat),
+            end: date2String(event.endat),
             storeId: event.storeId,
         }));
 
@@ -42,4 +44,8 @@ export async function getEvents(): Promise<CalendarEvent[] | null> {
         console.error(error);
         throw new Error('Failed to fetch events');
     }
+}
+function date2String(date: Date) {
+    const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}T${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
+    return formattedDate;
 }
