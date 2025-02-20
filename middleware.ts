@@ -4,6 +4,7 @@ import { authConfig } from './auth.config';
 // export default NextAuth(authConfig).auth;
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "./auth";  // `auth.ts` で `auth()` をエクスポートしていると仮定
+import { run } from 'node:test';
 
 export async function middleware(request: NextRequest) {
   const session = await auth();
@@ -32,4 +33,5 @@ export async function middleware(request: NextRequest) {
 export const config = {
   // https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher
   matcher:  ['/((?!user/login|register|api|_next/static|_next/image|admin/login|.*\\.png$).*)'],
+  runtime: 'nodejs',
 };

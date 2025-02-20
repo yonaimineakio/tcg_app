@@ -7,7 +7,7 @@ import { getEvents } from '@/lib/data';
 import { useState, useEffect } from 'react';
 import type { CalendarEvent } from '@/lib/definitions';
 // import { library } from "@fortawesome/fontawesome-svg-core";
-import { faCoffee, faRunning } from "@fortawesome/free-solid-svg-icons";
+import { faCoffee } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 export default function Calender() {
