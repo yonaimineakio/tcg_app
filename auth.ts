@@ -2,7 +2,7 @@ import NextAuth from 'next-auth';
 import { authConfig } from './auth.config';
 import Credentials from 'next-auth/providers/credentials';
 import { getUser } from '@/lib/data';
-import bcrypt from 'bcrypt';
+import bcrypt from "bcryptjs";
 import {z} from 'zod';
 
  
@@ -19,6 +19,7 @@ export const { auth, signIn, signOut } = NextAuth({
                const user = await getUser(email);
                if(!user)  return null;
                const PasswordMatch = await bcrypt.compare(password, user.hashedPassword);
+               console.log(user);
                if(PasswordMatch) return user;
             }
             console.log('Credentials not valid');

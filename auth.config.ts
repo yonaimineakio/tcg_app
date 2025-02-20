@@ -1,17 +1,25 @@
-import type { NextAuthConfig } from 'next-auth';
+import type { NextAuthConfig, Session, User as NextAuthUser } from 'next-auth';
+import { JWT } from "next-auth/jwt";
+import { NextRequest } from 'next/server';
 
 export const authConfig = {
   pages: {
     signIn: '/login',
   },
   callbacks: {
-    authorized({ auth, request: {nextUrl}}) {
-        const isLogin = !!auth?.user
-        if(isLogin) {
-            return true;
-        } else {
-            return Response.redirect(new URL('/user/login', nextUrl));
-        }
+    async jwt({ token, user }) {
+      if (user) {
+        token.user = user;
+      }
+      return token;
+    },
+    async session({ session, token }:{ session: Session; token: JWT }) {
+      session.user = token.user as NextAuthUser;
+      return session;
+    },
+    authorized({ auth, request: {nextUrl}}: {auth: Session | null, request: NextRequest}) {
+        const isLogin = !!auth?.user;
+        return isLogin;
     }
   },
   providers: [],
