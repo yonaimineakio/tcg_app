@@ -9,7 +9,7 @@ import type { CalendarEvent } from '@/lib/definitions';
 // import { library } from "@fortawesome/fontawesome-svg-core";
 import { faCoffee } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import EventModal from "@/components/Calender/EventModal"
+import EventModal from "@/components/calender/EventModal";
 
 
 export default function Calender() {
