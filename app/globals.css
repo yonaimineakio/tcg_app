@@ -21,7 +21,7 @@ body {
 }
 
 
-.calendar-container {
+.user.calendar-container {
   display: flex;
   justify-content: center;  /* 水平方向の中央寄せ */
   align-items: center;       /* 垂直方向の中央寄せ（必要なら） */
@@ -34,6 +34,15 @@ body {
     #00FF00 20px,
     #00FF00 40px
   );
+}
+
+.owner.calendar-container {
+  display: flex;
+  justify-content: right;  /* 水平方向の中央寄せ */
+  align-items: center;       /* 垂直方向の中央寄せ（必要なら） */
+  min-height: 100vh;          /* 画面の80%の高さ */
+  padding: 20px;             /* 四方に余白を追加 */
+
 }
 
 .fc {
