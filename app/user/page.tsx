@@ -1,6 +1,6 @@
 'use client';
 
-import Calender from '@/components/calender/FullCalendarWrapper';
+import Calender from '@/components/Calender/FullCalendarWrapper';
 
 export default function Page() {
     return (
