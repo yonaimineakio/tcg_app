@@ -1,10 +1,6 @@
-import NextAuth from 'next-auth';
-import { authConfig } from './auth.config';
- 
-// export default NextAuth(authConfig).auth;
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "./auth";  // `auth.ts` で `auth()` をエクスポートしていると仮定
-import { run } from 'node:test';
+
 
 export async function middleware(request: NextRequest) {
   const session = await auth();
