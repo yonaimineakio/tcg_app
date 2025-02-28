@@ -13,6 +13,7 @@ const links = [
 
 export default function SideBar() {
 
+  const params = useParams();
     return (
       <aside className="w-64 bg-gray-200 p-4">
       <h2 className="text-xl font-bold mb-4">TCG 管理者ページ</h2>
@@ -22,7 +23,7 @@ export default function SideBar() {
                     key={link.name} 
                     href={link.href}
                     className={clsx("text-blue-500 hover:underline", {
-                    "font-bold": useParams().id === link.href,
+                    "font-bold": params.id === link.href,
                     })}>
                 <p className="hidden md:block">{link.name}</p>
                 </Link>

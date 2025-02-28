@@ -18,6 +18,7 @@ const EventModal: React.FC<ModalProps> = ({ isOpen, onClose, calenderEvent, chil
           <button className="absolute top-2 right-2 text-gray-500 z-50" onClick={onClose}>
             ✖
           </button>
+          { calenderEvent && calenderEvent.title}
           {children}
         </div>
       </div>
