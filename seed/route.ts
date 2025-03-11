@@ -28,7 +28,7 @@ async function seedStores() {
     await sql(`
         CREATE TABLE IF NOT EXISTS stores (
             id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-            storeId VARCHAR(255) NOT NULL,
+            store_id VARCHAR(255) NOT NULL,
             name VARCHAR(255) NOT NULL,
             startAt TIME NOT NULL,
             endAt TIME NOT NULL,
@@ -54,18 +54,18 @@ async function seedNotifications() {
             index INT NOT NULL,
             description TEXT NOT NULL,
             summary TEXT NOT NULL,
-            profileImageUrl TEXT,
+            profileimage_url TEXT,
             isEnabled BOOLEAN NOT NULL,
-            storeId VARCHAR(255) NOT NULL
+            store_id VARCHAR(255) NOT NULL
         );
     `);
     const insertedNotifications = await Promise.all(
         notifications.map(
             (notification) => sql(`
-                INSERT INTO notifications (id, index, description, summary, profileImageUrl, isEnabled, storeId)
+                INSERT INTO notifications (id, index, description, summary, profileimage_url, isEnabled, store_id)
                 VALUES ($1, $2, $3, $4, $5, $6, $7)
                 ON CONFLICT (id) DO NOTHING;
-            `, [notification.id, notification.index, notification.description, notification.summary, notification.profileImageUrl, notification.isEnabled, notification.storeId]),
+            `, [notification.id, notification.index, notification.description, notification.summary, notification.profileimage_url, notification.isEnabled, notification.store_id]),
         ),
     );
     return insertedNotifications;
@@ -79,16 +79,16 @@ async function seedEvents() {
             description TEXT NOT NULL,
             startAt TIMESTAMP NOT NULL,
             endAt TIMESTAMP NOT NULL,
-            storeId VARCHAR(255) NOT NULL
+            store_id VARCHAR(255) NOT NULL
         );
     `);
     const insertedEvents = await Promise.all(
         events.map(
             (event) => sql(`
-                INSERT INTO events (id, title, description, startAt, endAt, storeId)
+                INSERT INTO events (id, title, description, startAt, endAt, store_id)
                 VALUES ($1, $2, $3, $4, $5, $6)
                 ON CONFLICT (id) DO NOTHING;
-            `, [event.id, event.title, event.description, event.startAt, event.endAt, event.storeId]),
+            `, [event.id, event.title, event.description, event.startAt, event.endAt, event.store_id]),
         ),
     );
     return insertedEvents;

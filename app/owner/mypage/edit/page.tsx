@@ -1,6 +1,11 @@
-export default async function Page() {
+import React from "react"
+import { getStores } from "@/lib/data"
+import Form from "@/components/edit-mypage-form"
 
+export default async function Page() {
+  const stores = await getStores() || []
   return (
-    <h1>This is MyPage edit Page</h1>
+    <Form stores={stores}/>
   )
+
 }

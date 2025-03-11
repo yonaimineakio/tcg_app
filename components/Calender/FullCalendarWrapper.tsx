@@ -56,9 +56,9 @@ export default function Calender() {
       id: clickInfo.event.id,
       title: clickInfo.event.title,
       description: clickInfo.event.extendedProps.description,
-      start: formatDate2JST(clickInfo.event.startStr),
-      end: formatDate2JST(clickInfo.event.endStr),
-      storeId: clickInfo.event.extendedProps.storeId,
+      startAt: formatDate2JST(clickInfo.event.startStr),
+      endAt: formatDate2JST(clickInfo.event.endStr),
+      store_id: clickInfo.event.extendedProps.store_id,
     });
 
     setIsOpen(true);
@@ -99,8 +99,8 @@ export default function Calender() {
       <EventModal isOpen={isOpen} onClose={ () => setIsOpen(false) } calenderEvent={selectedEvent}>
         <h2 className="text-xl font-bold">{selectedEvent?.title}</h2>
         <p className="text-gray-600">{selectedEvent?.description}</p>
-        <p className="text-gray-700 mt-2">{selectedEvent?.start}</p>
-        <p className="text-gray-700 mt-2">{selectedEvent?.end}</p>
+        <p className="text-gray-700 mt-2">{selectedEvent?.startAt}</p>
+        <p className="text-gray-700 mt-2">{selectedEvent?.endAt}</p>
       </ EventModal>
     </div>
   );
