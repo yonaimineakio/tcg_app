@@ -18,7 +18,7 @@ export const users = [
   const stores = [
     {
       id: uuidv4(),
-      storeId : 'store1',
+      store_id : 'store1',
       name: 'Central Coffee',
       startAt: '08:00:00',
       endAt: '20:00:00',
@@ -26,7 +26,7 @@ export const users = [
     },
     {
       id: uuidv4(),
-      storeId : 'store2',
+      store_id : 'store2',
       name: 'Tech Lounge',
       startAt: '09:00:00',
       endAt: '22:00:00',
@@ -40,9 +40,9 @@ export const users = [
       index: 1,
       description: 'Weekly promo campaign',
       summary: 'Weekly Promotion',
-      profileImageUrl: 'https://example.com/promo.jpg',
+      profileimage_url: 'https://example.com/promo.jpg',
       isEnabled: true,
-      storeId: 'store1',
+      store_id: 'store1',
     },
     {
       id: uuidv4(),
@@ -50,7 +50,7 @@ export const users = [
       description: 'New tech event announcement',
       summary: 'Tech Event',
       isEnabled: false,
-      storeId: 'store2',
+      store_id: 'store2',
     },
   ];
   
@@ -61,7 +61,7 @@ export const users = [
       description: 'Learn how to brew coffee like a pro.',
       startAt: '2025-01-20T10:00:00',
       endAt: '2025-01-20T12:00:00',
-      storeId: 'store1',
+      store_id: 'store1',
     },
     {
       id: uuidv4(),
@@ -69,7 +69,7 @@ export const users = [
       description: 'Discuss the latest in technology.',
       startAt: '2025-01-22T15:00:00',
       endAt: '2025-01-22T17:00:00',
-      storeId: 'store2',
+      store_id: 'store2',
     },
     {
       id: uuidv4(),
@@ -77,7 +77,7 @@ export const users = [
       description: 'Discuss the latest in technology.',
       startAt: '2025-02-21T15:00:00',
       endAt: '2025-02-21T17:00:00',
-      storeId: 'store2',
+      store_id: 'store2',
     },
   ];
   

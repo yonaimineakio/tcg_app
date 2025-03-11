@@ -5,7 +5,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from "@fullcalendar/interaction";
 import { getEvents } from '@/lib/data';
 import { useState, useEffect } from 'react';
-import type { CalendarEvent } from '@/lib/definitions';
+import type { CalendarDisplayEvent } from '@/lib/definitions';
 // import { library } from "@fortawesome/fontawesome-svg-core";
 import { faCoffee } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -13,9 +13,9 @@ import EventModal from "@/components/Calender/EventModal";
 
 
 export default function Calender() {
-  const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [events, setEvents] = useState<CalendarDisplayEvent[]>([]);
   const [isOpen, setIsOpen] = useState(false); 
-  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
+  const [selectedEvent, setSelectedEvent] = useState<CalendarDisplayEvent | null>(null)
 
   function formatDate2JST(isoString: string) {
     const date = new Date(isoString);
@@ -58,7 +58,7 @@ export default function Calender() {
       description: clickInfo.event.extendedProps.description,
       start: formatDate2JST(clickInfo.event.startStr),
       end: formatDate2JST(clickInfo.event.endStr),
-      storeId: clickInfo.event.extendedProps.storeId,
+      store_id: clickInfo.event.extendedProps.store_id,
     });
 
     setIsOpen(true);

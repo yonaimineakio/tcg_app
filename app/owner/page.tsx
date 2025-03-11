@@ -6,10 +6,10 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from "@fullcalendar/interaction";
 import { getEvents } from '@/lib/data';
 import { useState, useEffect } from 'react';
-import type { CalendarEvent } from '@/lib/definitions';
+import type { CalendarDisplayEvent } from '@/lib/definitions';
 
 export default function Calender() {
-  const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [events, setEvents] = useState<CalendarDisplayEvent[]>([]);
   useEffect(() => {
     async function fetchEvents() {
       try {
@@ -28,6 +28,7 @@ export default function Calender() {
     // ここにイベントクリック時の処理を記述
     console.log("event clicked", clickInfo.event);
   };
+  console.log('Fetched events:', events);
 
   const handleDateClick = () => {
     console.log("date clicked");
@@ -47,7 +48,8 @@ export default function Calender() {
               right: 'dayGridMonth',
             }}
             titleFormat={{ year: 'numeric', month: 'long' }}
-            events={events}
+            // events={events}
+            events={events} 
             eventClick={handleEventClick}
             dateClick={handleDateClick}
           />

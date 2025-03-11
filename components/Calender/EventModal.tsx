@@ -1,10 +1,10 @@
 import React from "react";
-import { CalendarEvent } from "@/lib/definitions";
+import { CalendarDisplayEvent } from "@/lib/definitions";
 
 interface ModalProps {
   isOpen: boolean; // モーダルが開いているかどうか
   onClose: () => void; // モーダルを閉じる関数
-  calenderEvent: CalendarEvent | null;
+  calenderEvent: CalendarDisplayEvent | null;
   children?: React.ReactNode;
 }
 
