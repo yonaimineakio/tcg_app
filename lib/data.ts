@@ -85,6 +85,7 @@ export async function getEvents(): Promise<CalendarDisplayEvent[] | null> {
             start: date2String(event.startat),
             end: date2String(event.endat),
             store_id: event.store_id,
+            rrule: event.rrule 
         }));
 
         return events;
@@ -107,6 +108,9 @@ export async function getEvent(eventId: string): Promise<CalendarEvent | null> {
             startAt: date2String(result[0].startat),
             endAt: date2String(result[0].endat),
             store_id: result[0].store_id,
+            rrule: result[0].rrule,
+            isrrule: result[0].isrrule
+
         };
 
         return event;
@@ -128,6 +132,7 @@ export async function getEventsByStore(store_id: string): Promise<CalendarEvent[
             startAt: date2String(event.startat),
             endAt: date2String(event.endat),
             store_id: event.store_id,
+            isrrule: event.isrrule
         }));
 
         return events;
@@ -188,6 +193,7 @@ export async function getNotification(notificationId: string): Promise<Notificat
 
 
 function date2String(date: Date) {
-    const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}T${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
+    if (!date) return
+    const formattedDate = `${date?.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}T${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
     return formattedDate;
 }

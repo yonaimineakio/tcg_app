@@ -27,29 +27,31 @@ export type Notification = {
     store_id: string;
 };
 
-// export type RecurrenceRule = {
-//     freq: "daily" | "weekly" | "monthly" | "yearly";
-//     dstart: string;
-//     until?: string;
-//     count?: number;
-//     byweekday?: string[];
-// };
+
+export type RRuleData = {
+    dtstart: string;
+    freq: string;
+    interval: number;
+    until: string;
+    byday: string[];
+  };
 
 export type CalendarEvent = {
     id: string;
     title: string;
     description: string;
-    startAt: string;
-    endAt: string;
+    startAt?: string;
+    endAt?: string;
     store_id: string;
-    //繰り返し設定は後ほど検討。
+    rrule?: string;
+    isrrule: boolean;
 }
 export type CalendarDisplayEvent = {
     id: string;
     title: string;
     description: string;
-    start: string;
-    end: string;
+    start?: string;
+    end?: string;
     store_id: string;
-    //繰り返し設定は後ほど検討。
+    rrule?: string;
 }
