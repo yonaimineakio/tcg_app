@@ -10,7 +10,7 @@ import { revalidatePath } from "next/cache";
 // ------------------------------
 // 共通の画像アップロード処理
 // ------------------------------
-async function uploadImage(formData: FormData, fieldName: string): Promise<string> {
+async function uploadImage(formData: FormData, fieldName: string): Promise< {url: string, saveTableUrl: string} > {
   const file = formData.get(fieldName) as File | null;
   if (file && file.size > 0) {
     const filename = "image_" + uuidv4();
@@ -28,10 +28,11 @@ async function uploadImage(formData: FormData, fieldName: string): Promise<strin
     if (!uploadRes.ok) {
       throw new Error("Failed to upload image");
     }
+    const saveTableUrl = `https://storage.cloud.google.com/${process.env.GCP_STORAGE_BUCKET}/${filename}`
     console.log("Uploaded image");
-    return url;
+    return {url, saveTableUrl};
   }
-  return "";
+  return {url: "", saveTableUrl: ""};
 }
 // ------------------------------
 // 認証
@@ -57,9 +58,11 @@ export async function authenticate(prevState: string | undefined, formData: Form
 const EventFormSchema = z.object({
   title: z.string().nonempty(),
   description: z.string(),
-  start: z.string().nonempty(),
-  end: z.string().nonempty(),
+  start: z.string().optional(),
+  end: z.string().optional(),
   store_id: z.string(),
+  rrule: z.string().optional(),
+  isrrule: z.boolean()
 });
 const StoreFormSchema = z.object({
   name: z.string().nonempty(),
@@ -84,9 +87,11 @@ const NotificationFormSchema = z.object({
 // ------------------------------
 export async function createNotification(storeId: string, prevState: string | undefined, formData: FormData) {
   const notificationCount = await sql(`SELECT COUNT(*) FROM notifications WHERE store_id = $1`, [storeId]);
+  let urlResults = {url: "", saveTableUrl: ""};
   let profile_image_url = "";
   try {
-    profile_image_url = await uploadImage(formData, "icon");
+    urlResults = await uploadImage(formData, "icon");
+    profile_image_url = urlResults.saveTableUrl;
   } catch (err: unknown) {
     if (err instanceof Error) {
       console.error(err);
@@ -129,11 +134,13 @@ export async function createNotification(storeId: string, prevState: string | un
   redirect('/owner/mypage/create');
 }
 export async function updateNotification(notificationId: string, prevState: string | undefined, formData: FormData) {
+  let urlResults = {url: "", saveTableUrl: ""};
   let profile_image_url = "";
   const icon = formData.get("icon") as File;
   if (icon && icon.size > 0) {
     try {
-      profile_image_url = await uploadImage(formData, "icon");
+      urlResults = await uploadImage(formData, "icon");
+      profile_image_url = urlResults.saveTableUrl;
     } catch (err: unknown) {
         if (err instanceof Error) {
             console.error(err);
@@ -183,9 +190,11 @@ export async function updateNotification(notificationId: string, prevState: stri
 // ------------------------------
 export async function createStore(prevState: string | undefined, formData: FormData) {
   const newStoreId = uuidv4();
+  let urlResults = {url: "", saveTableUrl: ""};
   let image_url = "";
   try {
-    image_url = await uploadImage(formData, "icon");
+    urlResults = await uploadImage(formData, "icon");
+    image_url = urlResults.saveTableUrl;
   } catch (err: unknown) {
     if (err instanceof Error) {
       console.error(err);
@@ -230,11 +239,13 @@ export async function createStore(prevState: string | undefined, formData: FormD
   redirect('/owner');
 }
 export async function updateStore(storeId: string, prevState: string | undefined, formData: FormData) {
+  let urlResults = {url: "", saveTableUrl: ""};
   let image_url = "";
   const icon = formData.get("icon") as File;
   if (icon && icon.size > 0) {
     try {
-      image_url = await uploadImage(formData, "icon");
+      urlResults = await uploadImage(formData, "icon");
+      image_url = urlResults.saveTableUrl;
     } catch (err: unknown) {
         if (err instanceof Error) {
             console.error(err);
@@ -287,25 +298,45 @@ export async function updateStore(storeId: string, prevState: string | undefined
 // ------------------------------
 // Event 作成・更新
 // ------------------------------
-export async function createEvent(prevState: string | undefined, formData: FormData) {
-  const newStoreId = uuidv4();
+export async function createEvent(store_id: string, prevState: string | undefined, formData: FormData) {
+  let rruleString = "";
+  let startDate = formData.get("start");
+  const endDate = (formData.get("start") as string).replace(/T.*/, "T23:59:59");
+
+  if (formData.get("isrrule")) {
+    startDate = "";
+    const dtstartRaw = formData.get("dtstart") as string;
+    const untilRaw = formData.get("until") as string;
+    const interval = formData.get("interval");
+    const byweekday = formData.getAll("byweekday").join(",");
+    rruleString = `DTSTART:${formatDateForRRule(dtstartRaw)}\nRRULE:FREQ=WEEKLY;INTERVAL=${interval};UNTIL=${formatDateForRRule(untilRaw)};BYDAY=${byweekday}`;
+    console.log("Formatted RRULE string:", rruleString);
+  }
+  console.log("==rruleString==", rruleString);
+  
+
   const parsedFormData = EventFormSchema.parse({
     title: formData.get("title"),
     description: formData.get("description"),
-    start: formData.get("start"),
-    end: formData.get("end"),
-    store_id: newStoreId,
+    start: startDate || undefined, 
+    end: endDate || undefined,
+    store_id: store_id,
+    rrule: rruleString || undefined,
+    isrrule: formData.get("isrrule") === "on" ? true : false
   });
   console.log("==formData==", formData);
+  console.log("==parsedFormData==", parsedFormData.rrule);
   try {
     await sql(
-      `INSERT INTO events (title, description, startat, endat, store_id) VALUES ($1, $2, $3, $4, $5)`,
+      `INSERT INTO events (title, description, startat, endat, store_id ,rrule, isrrule) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
       [
         parsedFormData.title,
         parsedFormData.description,
-        new Date(parsedFormData.start),
-        new Date(parsedFormData.end),
+        parsedFormData.start ? new Date(parsedFormData.start) : null,
+        parsedFormData.end ? new Date(parsedFormData.end) : null,
         parsedFormData.store_id,
+        parsedFormData.rrule,
+        parsedFormData.isrrule
       ]
     );
     console.log("Event creation success!");
@@ -325,22 +356,42 @@ export async function createEvent(prevState: string | undefined, formData: FormD
   redirect('/owner');
 }
 export async function updateEvent(eventId: string, prevState: string | undefined, formData: FormData) {
+  let rruleString = "";
+  let startDate = formData.get("start");
+  const endDate = (formData.get("start") as string).replace(/T.*/, "T23:59:59");
+
+  if (formData.get("isrrule")) {
+    startDate = "";
+    const dtstartRaw = formData.get("dtstart") as string;
+    const untilRaw = formData.get("until") as string;
+    const interval = formData.get("interval");
+    const byweekday = formData.getAll("byweekday").join(",");
+  
+    rruleString = `DTSTART:${formatDateForRRule(dtstartRaw)}\nRRULE:FREQ=WEEKLY;INTERVAL=${interval};UNTIL=${formatDateForRRule(untilRaw)};BYDAY=${byweekday}`;
+    console.log("Formatted RRULE string:", rruleString);
+  }
+  console.log("==rruleString==", rruleString);
+
   const parsedFormData = EventFormSchema.parse({
     title: formData.get('title'),
     description: formData.get('description'),
-    start: formData.get('start'),
-    end: formData.get('end'),
+    start: startDate || undefined,
+    end: endDate || undefined,
     store_id: "", // 更新時は store_id は変更しない
+    rrule: rruleString || undefined,
+    isrrule: formData.get('isrrule') === "on" ? true : false
   });
   console.log("==formData==", formData);
   try {
     await sql(
-      `UPDATE events SET title = $1, description = $2, startat = $3, endat = $4 WHERE id = $5`,
+      `UPDATE events SET title = $1, description = $2, startat = $3, endat = $4, rrule = $5, isrrule = $6 WHERE id = $7`,
       [
         parsedFormData.title,
         parsedFormData.description,
-        new Date(parsedFormData.start),
-        new Date(parsedFormData.end),
+        parsedFormData.start ? new Date(parsedFormData.start) : null,
+        parsedFormData.end ? new Date(parsedFormData.end) : null,
+        parsedFormData.rrule,
+        parsedFormData.isrrule,
         eventId,
       ]
     );
@@ -359,4 +410,17 @@ export async function updateEvent(eventId: string, prevState: string | undefined
   }
   revalidatePath('/owner/event/edit');
   redirect('/owner');
+}
+
+// 日付文字列を「YYYYMMDDTHHMMSSZ」形式に変換するヘルパー関数
+function formatDateForRRule(dateStr: string): string {
+  const d = new Date(dateStr);
+  // UTCの値を取得してゼロパディング
+  const year = d.getUTCFullYear();
+  const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(d.getUTCDate()).padStart(2, '0');
+  const hours = String(d.getUTCHours()).padStart(2, '0');
+  const minutes = String(d.getUTCMinutes()).padStart(2, '0');
+  const seconds = String(d.getUTCSeconds()).padStart(2, '0');
+  return `${year}${month}${day}T${hours}${minutes}${seconds}Z`;
 }

@@ -19,6 +19,7 @@
     "@fullcalendar/interaction": "^6.1.15",
     "@fullcalendar/list": "^6.1.15",
     "@fullcalendar/react": "^6.1.15",
+    "@fullcalendar/rrule": "^6.1.15",
     "@google-cloud/storage": "^7.15.2",
     "@neondatabase/serverless": "^0.10.4",
     "@types/bcrypt": "^5.0.2",

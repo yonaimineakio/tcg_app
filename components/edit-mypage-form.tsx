@@ -118,7 +118,7 @@ export default function Form({stores}: {stores: Store[]}) {
         {/* 通知アイコン */}
         <div>
           <label htmlFor="icon" className="block font-medium mb-1">
-            通知アイコン
+            通知画像
           </label>
           <input
             id="icon"

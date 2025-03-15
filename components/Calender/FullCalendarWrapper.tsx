@@ -3,6 +3,7 @@ import FullCalendar from '@fullcalendar/react';
 import { EventClickArg } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from "@fullcalendar/interaction";
+import rrulePlugin from '@fullcalendar/rrule';
 import { getEvents } from '@/lib/data';
 import { useState, useEffect } from 'react';
 import type { CalendarDisplayEvent } from '@/lib/definitions';
@@ -72,7 +73,7 @@ export default function Calender() {
   return (
     <div className="user calendar-container">
     <FullCalendar
-      plugins={[dayGridPlugin, interactionPlugin]}
+      plugins={[dayGridPlugin, rrulePlugin,interactionPlugin]}
       initialView="dayGridMonth"
       locales={[jaLocale]}
       locale="ja"

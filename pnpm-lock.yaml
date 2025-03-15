@@ -38,6 +38,9 @@ importers:
       '@fullcalendar/react':
         specifier: ^6.1.15
         version: 6.1.15(@fullcalendar/core@6.1.15)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@fullcalendar/rrule':
+        specifier: ^6.1.15
+        version: 6.1.15(@fullcalendar/core@6.1.15)(rrule@2.8.1)
       '@google-cloud/storage':
         specifier: ^7.15.2
         version: 7.15.2
@@ -257,6 +260,12 @@ packages:
       '@fullcalendar/core': ~6.1.15
       react: ^16.7.0 || ^17 || ^18 || ^19
       react-dom: ^16.7.0 || ^17 || ^18 || ^19
+
+  '@fullcalendar/rrule@6.1.15':
+    resolution: {integrity: sha512-4tJivAncp/eIhMDTH2v1gssv3sHPYrj2RHfbUklz2Z7bYRSj8tI7mjZWve2acqPmbg21y1nVEOwDfjWhHPcE/Q==}
+    peerDependencies:
+      '@fullcalendar/core': ~6.1.15
+      rrule: ^2.6.0
 
   '@google-cloud/paginator@5.0.2':
     resolution: {integrity: sha512-DJS3s0OVH4zFDB1PzjxAsHqJT6sKVbRwwML0ZBP9PbU7Yebtu/7SWMRzvO2J3nUi9pRNITCfu4LJeooM2w4pjg==}
@@ -2563,6 +2572,9 @@ packages:
     resolution: {integrity: sha512-l0OE8wL34P4nJH/H2ffoaniAokM2qSmrtXHmlpvYr5AVVX8msAyW0l8NVJFDxlSK4u3Uh/f41cQheDVdnYijwQ==}
     hasBin: true
 
+  rrule@2.8.1:
+    resolution: {integrity: sha512-hM3dHSBMeaJ0Ktp7W38BJZ7O1zOgaFEsn41PDk+yHoEtfLV+PoJt9E9xAlZiWgf/iqEqionN0ebHFZIDAp+iGw==}
+
   run-parallel@1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
 
@@ -3173,6 +3185,11 @@ snapshots:
       '@fullcalendar/core': 6.1.15
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
+
+  '@fullcalendar/rrule@6.1.15(@fullcalendar/core@6.1.15)(rrule@2.8.1)':
+    dependencies:
+      '@fullcalendar/core': 6.1.15
+      rrule: 2.8.1
 
   '@google-cloud/paginator@5.0.2':
     dependencies:
@@ -5674,6 +5691,10 @@ snapshots:
   rimraf@5.0.10:
     dependencies:
       glob: 10.4.5
+
+  rrule@2.8.1:
+    dependencies:
+      tslib: 2.8.1
 
   run-parallel@1.2.0:
     dependencies:

@@ -3,12 +3,14 @@ import jaLocale from "@fullcalendar/core/locales/ja";  // 日本語ロケール�
 import FullCalendar from '@fullcalendar/react';
 import { EventClickArg } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
+import rrulePlugin from '@fullcalendar/rrule';
 import interactionPlugin from "@fullcalendar/interaction";
 import { getEvents } from '@/lib/data';
 import { useState, useEffect } from 'react';
 import type { CalendarDisplayEvent } from '@/lib/definitions';
 
 export default function Calender() {
+
   const [events, setEvents] = useState<CalendarDisplayEvent[]>([]);
   useEffect(() => {
     async function fetchEvents() {
@@ -38,7 +40,7 @@ export default function Calender() {
       <main className="flex-1 p-4 overflow-auto">
         <div className="calendar-container">
           <FullCalendar
-            plugins={[dayGridPlugin, interactionPlugin]}
+            plugins={[dayGridPlugin, rrulePlugin ,interactionPlugin]}
             initialView="dayGridMonth"
             locales={[jaLocale]}
             locale="ja"
