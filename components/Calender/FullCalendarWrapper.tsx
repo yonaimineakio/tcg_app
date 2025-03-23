@@ -1,46 +1,27 @@
+'use client';
 import jaLocale from "@fullcalendar/core/locales/ja";  // 日本語ロケールをインポート
 import FullCalendar from '@fullcalendar/react';
 import { EventClickArg } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
-import interactionPlugin from "@fullcalendar/interaction";
 import rrulePlugin from '@fullcalendar/rrule';
-import { getEvents } from '@/lib/data';
-import { useState, useEffect } from 'react';
-import type { CalendarDisplayEvent } from '@/lib/definitions';
-// import { library } from "@fortawesome/fontawesome-svg-core";
-import { faCoffee } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import EventModal from "@/components/Calender/EventModal";
-
+import interactionPlugin from "@fullcalendar/interaction";
+import EventListModal from "@/components/Calender/EventsListModal"
+import { useState, useEffect} from 'react';
+import type { CalendarDisplayEventsWithStoreInfo } from '@/lib/definitions';
+import { getEventByDayWithStoreName } from "@/lib/data";
+import { getEventsWithStoreName } from "@/lib/data";
 
 export default function Calender() {
-  const [events, setEvents] = useState<CalendarDisplayEvent[]>([]);
-  const [isOpen, setIsOpen] = useState(false); 
-  const [selectedEvent, setSelectedEvent] = useState<CalendarDisplayEvent | null>(null)
 
-  function formatDate2JST(isoString: string) {
-    const date = new Date(isoString);
-    const formatted = date.toLocaleString("ja-JP", {
-      timeZone: "Asia/Tokyo",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    });
-    // 一部環境では、toLocaleStringで「YYYY/MM/DD, HH:MM:SS」形式になる場合があるため、
-    // スラッシュをハイフンに、カンマをスペースに置換します。
-    return formatted.replace(/\//g, "-").replace(",", "");
-  }
-  
+  const [events, setEvents] = useState<CalendarDisplayEventsWithStoreInfo[]>([]);
+  const [selectedEvents, setSelectedEvents] = useState<CalendarDisplayEventsWithStoreInfo[] | null>(null);
+  const [eventListModalVisible, setEventListModalVisible] = useState(false);
   
 
   useEffect(() => {
     async function fetchEvents() {
       try {
-        const fetchedEvents = await getEvents();
+        const fetchedEvents = await getEventsWithStoreName();
         if (fetchedEvents) {
           setEvents(fetchedEvents);
         }
@@ -51,58 +32,54 @@ export default function Calender() {
     fetchEvents();
   }, []);
 
-  const handleEventClick = (clickInfo: EventClickArg) => {
+
+  const handleEventClick = (info: EventClickArg) => {
+    setSelectedEvents(null)
+    console.log("event clicked", info.event);
+    const date = info.event.startStr.substring(0,10);
+    getEventByDayWithStoreName(date).then((data) => {
+      if (data) {
+        setSelectedEvents(data);
+      }
+    }
+  )
+  setEventListModalVisible(true);
+};
+
+
+
+  console.log('Fetched events:', events);
+
+
   
-    setSelectedEvent({
-      id: clickInfo.event.id,
-      title: clickInfo.event.title,
-      description: clickInfo.event.extendedProps.description,
-      start: formatDate2JST(clickInfo.event.startStr),
-      end: formatDate2JST(clickInfo.event.endStr),
-      store_id: clickInfo.event.extendedProps.store_id,
-    });
-
-    setIsOpen(true);
-  };
-
-  const handleDateClick = () => {
-    setSelectedEvent(null);
-    setIsOpen(true);
-  };
 
   return (
-    <div className="user calendar-container">
-    <FullCalendar
-      plugins={[dayGridPlugin, rrulePlugin,interactionPlugin]}
-      initialView="dayGridMonth"
-      locales={[jaLocale]}
-      locale="ja"
-      headerToolbar={{
-        left: 'prev,next today',
-        center: 'title',
-        right: 'dayGridMonth', // 表示切り替えボタン
-      }}
-      titleFormat={{ year: 'numeric', month: 'long' }}
-      events={events}
-      eventContent={function (arg) { 
-        return (
-          <div>
-            <FontAwesomeIcon icon={faCoffee} />
-            <span>{arg.timeText}</span>
-            <span>{arg.event.title}</span>
-          </div>
-        );
-      }}
-      eventClick={handleEventClick}
-      dateClick={handleDateClick}
-    />
+      <main className="flex-1 p-4 overflow-auto">
+        <div className="max-w-4xl mx-auto w-full">
+          <FullCalendar
+            plugins={[dayGridPlugin, rrulePlugin ,interactionPlugin]}
+            initialView="dayGridMonth"
+            locales={[jaLocale]}
+            locale="ja"
+            headerToolbar={{
+              left: 'prev,next today',
+              center: 'title',
+              right: 'dayGridMonth',
+            }}
+            titleFormat={{ year: 'numeric', month: 'long' }}
+            // events={events}
+            events={events} 
+            eventClick={handleEventClick}
+          />
 
-      <EventModal isOpen={isOpen} onClose={ () => setIsOpen(false) } calenderEvent={selectedEvent}>
-        <h2 className="text-xl font-bold">{selectedEvent?.title}</h2>
-        <p className="text-gray-600">{selectedEvent?.description}</p>
-        <p className="text-gray-700 mt-2">{selectedEvent?.start}</p>
-        <p className="text-gray-700 mt-2">{selectedEvent?.end}</p>
-      </ EventModal>
-    </div>
+      { eventListModalVisible && (
+              <EventListModal
+                events={selectedEvents || []}
+                onClose={() => setEventListModalVisible(false)}
+              />
+            )}
+        </div>
+      </main>
+
   );
 }

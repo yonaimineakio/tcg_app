@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState,useEffect } from 'react';
-import {parseRRuleInput, parseRRuleDateLocal} from '@/lib/utils';
-import { Store, CalendarEvent,RRuleData } from '@/lib/definitions';
+import { Store, CalendarEvent } from '@/lib/definitions';
 import { getEventsByStore, getEvent } from '@/lib/data';
 import { updateEvent } from '@/lib/actions';
 import { useActionState } from 'react';
@@ -13,8 +12,6 @@ export default function Form({stores}: {stores: Store[]}) {
   const [selectedEvents, setSelectedEvents] = useState<CalendarEvent[]>([]);
   const [selectedEventId, setselectedEventId ] = useState<string>('');
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
-  const [isrrule, setIsRrule] = useState<boolean>(false);
-  const [rruleData, setRruleData] = useState<RRuleData | null>(null);
   const updateEventWithId = updateEvent.bind(null, selectedEventId)
   const [ errorMessage, formAction, isPending] = useActionState(
     updateEventWithId, undefined
@@ -23,12 +20,12 @@ export default function Form({stores}: {stores: Store[]}) {
   useEffect(() => {
     getEventsByStore(selectedstore_id).then((data) => {
       if (data) {
+        console.log(data)
+        console.log("selected")
         setSelectedEvents(data);
       }
       setselectedEventId('');
-      setSelectedEvent(null);
-      setIsRrule(false);
-      setRruleData(null);
+      setSelectedEvent(null)
     }
 
   )}, [selectedstore_id])
@@ -45,24 +42,6 @@ export default function Form({stores}: {stores: Store[]}) {
       }
   })}, [selectedEventId])
 
-  useEffect(() => {
-    if (selectedEvent) {
-      setIsRrule(selectedEvent.isrrule);
-      if(selectedEvent.isrrule) {
-        const {dtstart, freq, interval, until, byday} = parseRRuleInput(selectedEvent.rrule!);
-        console.log({dtstart, freq, interval, until, byday});
-        console.log(parseRRuleDateLocal(until));
-        setRruleData({
-          dtstart: parseRRuleDateLocal(dtstart),
-          freq: freq,
-          interval: interval,
-          until: parseRRuleDateLocal(until).split('T')[0],
-          byday: byday,
-        });
-
-      }
-    }
-  }, [selectedEvent]);
   
 
 
@@ -81,6 +60,7 @@ export default function Form({stores}: {stores: Store[]}) {
             name="store"
             className="w-full border rounded px-3 py-2"
             required
+            value={selectedstore_id}
             onChange={(e) => {
               setSelectedstore_id(e.target.value);
             }}
@@ -150,7 +130,7 @@ export default function Form({stores}: {stores: Store[]}) {
         </div>
 
         {/* 日時設定 */}
-        <div hidden={ isrrule ? true : false}>
+        <div>
           <label className="block font-medium mb-1">開始日時</label>
           <div className="flex items-center space-x-2">
             <input
@@ -160,12 +140,19 @@ export default function Form({stores}: {stores: Store[]}) {
               }
               type="datetime-local"
               className="border rounded px-3 py-2"
-              required={!isrrule} // 繰り返し設定が有効な場合は不要
+              required
+              // required={!isrrule} // 繰り返し設定が有効な場合は不要
             />
           </div>
         </div>
+        <input
+          type="hidden"
+          id="isrrule"
+          name="isrrule"
+          value={selectedEvent?.isrrule ? "true" : "false"}
+        />
 
-    {/* 繰り返し設定 */}
+    {/* 繰り返し設定
     <div>
           <div className="flex items-center space-x-2">
           <label className="font-medium mb-1">繰り返し</label>
@@ -178,7 +165,8 @@ export default function Form({stores}: {stores: Store[]}) {
               onChange={(e) => setIsRrule(e.target.checked)}
             />
           </div>
-          {isrrule && (
+    </div> *
+          {/* {isrrule && (
             <div className="mt-4 p-1 border rounded bg-gray-50">
               <div className="mb-4 flex items-center space-x-2">
                 <label className="font-medium mb-1">繰り返し設定</label>
@@ -250,7 +238,9 @@ export default function Form({stores}: {stores: Store[]}) {
             </div>
           )}
         </div>
-  
+    */}
+
+      
         <div>
           <button type="submit" className="w-full bg-blue-500 text-white px-4 py-2 rounded">
           {isPending ? '送信中‥‥' : '確定'}

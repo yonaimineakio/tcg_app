@@ -28,30 +28,31 @@ export type Notification = {
 };
 
 
-export type RRuleData = {
-    dtstart: string;
-    freq: string;
-    interval: number;
-    until: string;
-    byday: string[];
-  };
 
 export type CalendarEvent = {
     id: string;
     title: string;
     description: string;
-    startAt?: string;
+    startAt: string;
     endAt?: string;
     store_id: string;
-    rrule?: string;
     isrrule: boolean;
+    rruleid?: string;
 }
+
+export type CalendarDisplayEventsWithStoreInfo = CalendarDisplayEvent & {
+    store_name: string;
+    store_image?: string;
+}
+
+
+
 export type CalendarDisplayEvent = {
     id: string;
     title: string;
     description: string;
-    start?: string;
+    start: string;
     end?: string;
     store_id: string;
-    rrule?: string;
+    rruleid?: string
 }
