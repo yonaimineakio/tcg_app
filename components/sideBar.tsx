@@ -18,8 +18,8 @@ export default function SideBar() {
 
   const params = useParams();
     return (
-      <aside className="w-64 bg-gray-200 p-4">
-      <h2 className="text-xl font-bold mb-4">
+      <aside className="absolute w-64 bg-gray-200 p-4 top-0 left-0 h-full">
+      <h2 className="text-xl font-bold mb-4" >
         <Link href={"/owner"} className="hover:underline">
           TCG 管理者ページ
         </Link>

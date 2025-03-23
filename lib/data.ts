@@ -1,6 +1,5 @@
-import type { User, CalendarEvent, CalendarDisplayEvent, Store, Notification} from '@/lib/definitions';
+import type { User, CalendarEvent, CalendarDisplayEvent, CalendarDisplayEventsWithStoreInfo ,Store, Notification} from '@/lib/definitions';
 import sql from "@/db/db";
-
 
 export async function getUser(email: string): Promise<User | null> {
     try {
@@ -71,7 +70,6 @@ export async function getStore(store_id: string): Promise<Store | null> {
 }
 
 export async function getEvents(): Promise<CalendarDisplayEvent[] | null> {
-    
 
     try {
         const result = await sql(`SELECT * FROM events`)
@@ -95,6 +93,63 @@ export async function getEvents(): Promise<CalendarDisplayEvent[] | null> {
     }
 }
 
+export async function getEventsWithStoreName(): Promise<CalendarDisplayEventsWithStoreInfo[] | null> {
+    try {
+        const result = await sql(
+            `SELECT events.*, stores.name as store_name, stores.image_url as store_image  FROM events
+             JOIN stores ON events.store_id::uuid = stores.id
+            `)
+
+        if (result.length === 0) return null;
+
+        const events: CalendarDisplayEventsWithStoreInfo[] = result.map(event => ({
+            id: event.id,
+            title: event.title,
+            description: event.description,
+            start: date2String(event.startat),
+            end: date2String(event.endat),
+            store_id: event.store_id,
+            rrule: event.rrule,
+            store_name: event.store_name,
+            store_image: event.store_image
+        }));
+
+        return events;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Failed to fetch events');
+    }
+}
+
+export async function getEventByDayWithStoreName(date: string): Promise<CalendarDisplayEventsWithStoreInfo[] | null> {
+    try {
+        const result = await sql(`SELECT events.*, stores.name as store_name, stores.image_url as store_image FROM events
+                                  JOIN stores ON events.store_id::uuid = stores.id
+                                  WHERE CAST(events.startat AS DATE) = $1`, [date])
+
+        if (result.length === 0) return null;
+
+        const events: CalendarDisplayEventsWithStoreInfo[] = result.map(event => ({
+            id: event.id,
+            title: event.title,
+            description: event.description,
+            start: date2String(event.startat),
+            end: date2String(event.endat),
+            store_id: event.store_id,
+            rrule: event.rrule,
+            store_name: event.store_name,
+            store_image: event.store_image
+        }));
+        console.log(events);
+
+        return events;
+    }
+    catch (error) {
+        console.error(error);
+        throw new Error('Failed to fetch event');
+    }
+}
+
 export async function getEvent(eventId: string): Promise<CalendarEvent | null> {
     try {
         const result = await sql(`SELECT * FROM events WHERE id = $1`, [eventId])
@@ -108,8 +163,8 @@ export async function getEvent(eventId: string): Promise<CalendarEvent | null> {
             startAt: date2String(result[0].startat),
             endAt: date2String(result[0].endat),
             store_id: result[0].store_id,
-            rrule: result[0].rrule,
-            isrrule: result[0].isrrule
+            isrrule: result[0].isrrule,
+            rruleid: result[0].rruleid
 
         };
 
@@ -190,10 +245,64 @@ export async function getNotification(notificationId: string): Promise<Notificat
 }
 
 
+// export async function getEventsByRruleId(rruleid: string): Promise<CalendarEvent[] | null> {
+//     try {
+//         const result = await sql(`SELECT * FROM events WHERE rruleid = $1`, [rruleid])
+
+//         if (result.length === 0) return null;
+
+//         const startEvent : CalendarEvent = {
+//             id: result[0].id,
+//             title: result[0].title,
+//             description: result[0].description,
+//             startAt: date2String(result[0].startat),
+//             endAt: date2String(result[0].endat),
+//             store_id: result[0].store_id,
+//             isrrule: result[0].isrrule
+//         }
+
+//         const lastEvent : CalendarEvent = {
+//             id: result[result.length - 1].id,
+//             title: result[result.length - 1].title,
+//             description: result[result.length - 1].description,
+//             startAt: date2String(result[result.length - 1].startat),
+//             endAt: date2String(result[result.length - 1].endat),
+//             store_id: result[result.length - 1].store_id,
+//             isrrule: result[result.length - 1].isrrule
+//         }
+
+//         return [startEvent, lastEvent];
+
+
+//     } catch (error) {
+//         console.error(error);
+//         throw new Error('Failed to fetch events');
+//     }
+
+// }
+
+
+// export async function getRruledEventsByStore(store_id: string): Promise<{id: string, title: string}[] | null> {
+    
+//     const reuslts = await sql(`SELECT * FROM events WHERE store_id = $1 AND isrrule = TRUE`, [store_id])
+//     const uniqueRruledEventsMap = new Map<string,  { id: string; title: string }>();
+//     reuslts.forEach((event) => {
+//         if(!uniqueRruledEventsMap.has(event.rruleid)){
+//             uniqueRruledEventsMap.set(event.rruleid, { id: event.rruleid, title: event.title });
+//         }
+        
+//     });
+
+//     const uniqueRruledEvents = Array.from(uniqueRruledEventsMap.values());
+//     console.log(uniqueRruledEvents);
+//     return uniqueRruledEvents;
+
+// }
+
 
 
 function date2String(date: Date) {
-    if (!date) return
+    // if (!date) return
     const formattedDate = `${date?.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}T${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
     return formattedDate;
 }
