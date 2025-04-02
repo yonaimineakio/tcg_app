@@ -1,12 +1,8 @@
-import LoginForm from '@/components/login-form';
-import { Suspense } from 'react';
+// app/login/page.tsx
+import UserLoginForm from '@/components/user-login-form';
 
-export default async function Page() {
-    return (
-        <Suspense fallback={<div>Loading...</div>}>
-            <LoginForm/>
-        </Suspense>
-
-
-    )
-  }
+export default function Page() {
+  return (
+    <UserLoginForm />
+  );
+}

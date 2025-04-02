@@ -13,7 +13,7 @@ import { NeonQueryPromise } from "@neondatabase/serverless";
 // ------------------------------
 // 共通の画像アップロード処理
 // ------------------------------
-async function uploadImage(formData: FormData, fieldName: string): Promise< {signedUrl: string} > {
+async function uploadImage(formData: FormData, fieldName: string): Promise< {public_url: string} > {
   const file = formData.get(fieldName) as File | null;
   if (file && file.size > 0) {
     const filename = "image_" + uuidv4();
@@ -32,16 +32,13 @@ async function uploadImage(formData: FormData, fieldName: string): Promise< {sig
       throw new Error("Failed to upload image");
     } 
     const getRes = await fetch(`http://localhost:3000/api/fetch_file?file=${filenameEncoded}`);
-    const { signedUrl } = await getRes.json();
-
-    console.log("Uploaded image");
-    console.log("saveTableUrl", signedUrl);
-    return {signedUrl: signedUrl};
+    const { public_url } = await getRes.json();
+    return {public_url: public_url};
 
 
 
   }
-  return {signedUrl:""};
+  return {public_url:""};
 }
 // ------------------------------
 // 認証
@@ -99,11 +96,11 @@ const NotificationFormSchema = z.object({
 // ------------------------------
 export async function createNotification(storeId: string, prevState: string | undefined, formData: FormData) {
   const notificationCount = await sql(`SELECT COUNT(*) FROM notifications WHERE store_id = $1`, [storeId]);
-  let urlResults = {signedUrl: ""};
+  let urlResults = {public_url: ""};
   let profile_image_url = "";
   try {
     urlResults = await uploadImage(formData, "icon");
-    profile_image_url = urlResults.signedUrl;
+    profile_image_url = urlResults.public_url;
   } catch (err: unknown) {
     if (err instanceof Error) {
       console.error(err);
@@ -146,13 +143,13 @@ export async function createNotification(storeId: string, prevState: string | un
   redirect('/owner/mypage/create');
 }
 export async function updateNotification(notificationId: string, prevState: string | undefined, formData: FormData) {
-  let urlResults = {signedUrl: ""};
+  let urlResults = {public_url: ""};
   let profile_image_url = "";
   const icon = formData.get("icon") as File;
   if (icon && icon.size > 0) {
     try {
       urlResults = await uploadImage(formData, "icon");
-      profile_image_url = urlResults.signedUrl;
+      profile_image_url = urlResults.public_url;
     } catch (err: unknown) {
         if (err instanceof Error) {
             console.error(err);
@@ -202,11 +199,11 @@ export async function updateNotification(notificationId: string, prevState: stri
 // ------------------------------
 export async function createStore(prevState: string | undefined, formData: FormData) {
   const newStoreId = uuidv4();
-  let urlResults = {signedUrl: ""};
+  let urlResults = {public_url: ""};
   let imageUrl = "";
   try {
     urlResults = await uploadImage(formData, "icon");
-    imageUrl = urlResults.signedUrl;
+    imageUrl = urlResults.public_url;
   } catch (err: unknown) {
     if (err instanceof Error) {
       console.error(err);
@@ -251,13 +248,13 @@ export async function createStore(prevState: string | undefined, formData: FormD
   redirect('/owner');
 }
 export async function updateStore(storeId: string, prevState: string | undefined, formData: FormData) {
-  let urlResults = {signedUrl: ""};
+  let urlResults = {public_url: ""};
   let imageUrl = "";
   const icon = formData.get("icon") as File;
   if (icon && icon.size > 0) {
     try {
       urlResults = await uploadImage(formData, "icon");
-      imageUrl = urlResults.signedUrl;
+      imageUrl = urlResults.public_url;
       console.log("imageUrl", imageUrl);
     } catch (err: unknown) {
         if (err instanceof Error) {

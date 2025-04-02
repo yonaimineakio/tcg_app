@@ -1,5 +1,86 @@
-import type { User, CalendarEvent, CalendarDisplayEvent, CalendarDisplayEventsWithStoreInfo ,Store, Notification} from '@/lib/definitions';
+import type { User, CalendarEvent, CalendarDisplayEvent, CalendarDisplayEventsWithStoreInfo ,Store, Notification, UserAccount, UserEventParticipant} from '@/lib/definitions';
 import sql from "@/db/db";
+
+
+export async function upsertParticipantEvent(participant: UserEventParticipant): Promise<void> {
+    try {
+        await sql(
+            `INSERT INTO events_participants (event_id, provider_account_id, status) VALUES ($1, $2, $3)
+            ON CONFLICT (event_id, provider_account_id) DO UPDATE SET status = $3
+            `,
+            [participant.event_id, participant.provider_account_id, participant.status]
+        )
+    } catch (error) {
+        console.error(error);
+        throw new Error('Failed to create participant');
+    }
+}
+
+export async function getParticipantUserAccounts(event_id: string): Promise<UserAccount[] | null> {
+    try {
+        const result = await sql(
+            `
+            SELECT 
+                user_accounts.id,
+                user_accounts.name,
+                user_accounts.image_url,
+                user_accounts.provider,
+                user_accounts.provider_account_id
+            FROM 
+                user_accounts
+            WHERE
+             user_accounts.provider_account_id IN (
+                SELECT 
+                    provider_account_id 
+                FROM 
+                    events_participants
+                WHERE
+                    event_id = $1 AND
+                    status = 'interested'
+            )
+            `
+            , [event_id]
+        )
+        if (result.length === 0) return null;
+        return result.map(user => ({
+            id: user.id,
+            name: user.name,
+            image_url: user.image_url,
+            provider: user.provider,
+            provider_account_id: user.provider_account_id
+        }));
+    } catch (error) {
+        console.error(error);
+        throw new Error('Failed to get participant');
+    }
+}
+
+export async function createUserAccount(userAccount: UserAccount): Promise<void> {
+    try {
+        await sql(`INSERT INTO user_accounts (id, name, image_url, provider, provider_account_id) VALUES ($1, $2, $3, $4, $5)`, [userAccount.id, userAccount.name, userAccount.image_url, userAccount.provider, userAccount.provider_account_id])
+    } catch (error) {
+        console.error(error);
+        throw new Error('Failed to create user account');
+    }
+}
+
+export async function getUserAccount(provider_account_id: string, provider: string): Promise<UserAccount | null> {
+    try {
+        const result = await sql(`SELECT * FROM user_accounts WHERE provider_account_id = $1 AND provider = $2`, [provider_account_id, provider])
+        if (result.length === 0) return null;
+        const userAccount: UserAccount = {
+            id: result[0].id,
+            name: result[0].name,
+            image_url: result[0].image_url,
+            provider: result[0].provider,
+            provider_account_id: result[0].provider_account_id
+        };
+        return userAccount;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Failed to get user account');
+    }
+}
 
 export async function getUser(email: string): Promise<User | null> {
     try {
@@ -21,6 +102,16 @@ export async function getUser(email: string): Promise<User | null> {
         throw new Error('Failed to fetch user');
     } 
 
+}
+
+export async function isSignedUpBefore(provider_account_id: string, provider: string): Promise<boolean> {
+    try {
+        const result = await sql(`SELECT * FROM user_accounts WHERE provider_account_id = $1 AND provider = $2`, [provider_account_id, provider])
+        return result.length > 0;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Failed to check if user is signed up before');
+    }
 }
 
 export async function getStores(): Promise<Store[] | null> {

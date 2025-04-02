@@ -1,16 +1,24 @@
 'use client';
-import React, { useEffect } from 'react';
-import { CalendarDisplayEventsWithStoreInfo } from '@/lib/definitions';
+import React, { useEffect, useState } from 'react';
+import { CalendarDisplayEventsWithStoreInfo, UserAccount } from '@/lib/definitions';
 import parseDaytoDisplay from "@/lib/utils";
 import Image from 'next/image';
+import { getParticipantUserAccounts, upsertParticipantEvent } from '@/lib/data';
+import { useSession } from 'next-auth/react';
 
 
 type EventDetailModalProps = {
   event: CalendarDisplayEventsWithStoreInfo;
   onClose: () => void;
-};
+}
+
+
 
 export default function EventDetailModal({ event, onClose }: EventDetailModalProps) {
+
+ const { data: session } = useSession();
+ const [ participantUserAccounts, setParticipantUserAccounts] = useState<UserAccount[]>([]);
+ const [ isParticipant, setIsParticipant] = useState(false);
   useEffect(() => {
     // モーダル表示中は背景のスクロールを無効化
     document.body.style.overflow = 'hidden';
@@ -18,7 +26,24 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
       document.body.style.overflow = '';
     };
   }, []);
-  console.log("イベント詳細モーダル")
+
+  useEffect(() => {
+    const fetchParticipantUserAccounts = async () => {
+      const userAccounts = await getParticipantUserAccounts(event.id);
+      console.log("ユーザー情報", userAccounts);
+      setParticipantUserAccounts(userAccounts || []);
+    };
+    fetchParticipantUserAccounts();
+  }, [event.id]);
+
+  useEffect(() => {
+    const userParticipantStatus = participantUserAccounts.some(
+      user => user.provider_account_id === session?.user.providerAccountId
+    );
+    setIsParticipant(userParticipantStatus);
+    console.log("isParticipant", userParticipantStatus);
+  }, [participantUserAccounts ,session?.user.providerAccountId]);
+  
 
   return (
   <div className='fixed inset-0 z-30 flex items-center justify-center'>
@@ -54,8 +79,33 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
           <button className="flex-1 py-2 bg-gray-300 rounded text-center text-sm">
             店舗ページ
           </button>
-          {/* <!-- 興味ありボタン --> */}
-          <button className="flex-1 py-2 bg-yellow-300 rounded text-center text-sm">
+          {/* <!-- 興味あり --> */}
+          <button onClick={
+            async () => {
+              if (event.id && session?.user.providerAccountId) {
+                console.log("イベントID", event.id);
+                console.log("ユーザーID", session.user.id);
+                if (!isParticipant) {
+                  await upsertParticipantEvent({
+                    event_id: event.id,
+                    provider_account_id: session.user.providerAccountId || '',
+                    status: 'interested'
+                  });
+                  setIsParticipant(true);
+                  console.log("興味あり");
+                } else {
+                  await upsertParticipantEvent({
+                    event_id: event.id,
+                    provider_account_id: session.user.providerAccountId || '',
+                    status: 'pending'
+                  });
+                  setIsParticipant(false);
+                  console.log("興味なし");
+                }
+              }
+            }
+
+           } className={`flex-1 py-2 ${isParticipant ? 'bg-green-300' : 'bg-yellow-300'} rounded text-center text-sm`}>
             興味あり
           </button>
         </div>
@@ -70,34 +120,5 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
   </div>
 </div>
 
-    // <div className="fixed inset-0 z-50 flex items-center justify-center">
-    //   {/* 背景オーバーレイ */}
-    //   <div
-    //     className="absolute inset-0 bg-black bg-opacity-50"
-    //     onClick={onClose}
-    //   ></div>
-    //   {/* モーダル本体 */}
-    //   <div className="relative bg-white p-4 rounded-lg max-w-md w-full z-10">
-    //     <div className="flex justify-between items-center mb-4">
-    //       <h2 className="text-xl font-bold">イベント詳細</h2>
-    //       <button
-    //         onClick={onClose}
-    //         className="text-gray-600 text-2xl leading-none"
-    //       >
-    //         &times;
-    //       </button>
-    //     </div>
-    //     <div>
-    //       <h3 className="text-lg font-semibold">{event.title}</h3>
-    //       <p className="mt-2 text-sm text-gray-600">{event.description}</p>
-    //       <p className="mt-2">
-    //         <strong>開始日時:</strong> 
-    //         {/* {parseDaytoDisplay(event.start)} */}
-    //       </p>
-    //       {/* 必要に応じて追加情報を表示 */}
-    //     </div>
-    //   </div>
-      
-    // </div>
   );
 }

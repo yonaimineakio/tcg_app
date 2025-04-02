@@ -10,10 +10,14 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ error: "file query parameter is required" }, { status: 400 })
     }
 
+
     const storage = new Storage({
         projectId: process.env.GCP_PROJECT_ID,
-        keyFilename: process.env.GCP_APPLICATION_CREDENTIALS
+        credentials: JSON.parse(process.env.GCP_APPLICATION_CREDENTIALS || '{}')
     })
+
+    
+
 
     const bucket = storage.bucket(process.env.GCP_STORAGE_BUCKET!)
     const file = bucket.file(filename)

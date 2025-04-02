@@ -46,7 +46,6 @@ export type CalendarDisplayEventsWithStoreInfo = CalendarDisplayEvent & {
 }
 
 
-
 export type CalendarDisplayEvent = {
     id: string;
     title: string;
@@ -56,3 +55,21 @@ export type CalendarDisplayEvent = {
     store_id: string;
     rruleid?: string
 }
+
+export type UserEventParticipant = {
+    event_id: string;
+    provider_account_id: string;
+    status: string;
+}
+
+export type UserAccount = {
+    id: string;
+    name: string;
+    image_url: string;
+    provider: string;
+    provider_account_id: string;
+
+}
+// export type EventsParticipantsWithUserInfo = EventsParticipants & {
+//     user_image_url: string;
+// }

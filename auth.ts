@@ -1,4 +1,6 @@
 import NextAuth from 'next-auth';
+import Twitter from 'next-auth/providers/twitter';
+import Google from 'next-auth/providers/google';
 import { authConfig } from './auth.config';
 import Credentials from 'next-auth/providers/credentials';
 import { getUser } from '@/lib/data';
@@ -6,7 +8,8 @@ import bcrypt from "bcryptjs";
 import {z} from 'zod';
 
  
-export const { auth, signIn, signOut } = NextAuth({
+export const { handlers, auth, signIn, signOut } = NextAuth({
+     debug: true,
   ...authConfig,
   providers: [ 
     Credentials({
@@ -25,6 +28,14 @@ export const { auth, signIn, signOut } = NextAuth({
             console.log('Credentials not valid');
             return null;
         },
+    }),
+    Twitter({
+        clientId: process.env.TWITTER_CLIENT_ID,
+        clientSecret: process.env.TWITTER_CLIENT_SECRET,
+    }),
+    Google({
+        clientId: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
    ],
 });

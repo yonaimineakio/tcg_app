@@ -2,17 +2,18 @@
  
 import { useActionState } from 'react';
 import { authenticate } from '@/lib/actions';
-import { useSearchParams } from 'next/navigation';
+// import { useSearchParams } from 'next/navigation';
  
 export default function LoginForm() {
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/user';
+  // const searchParams = useSearchParams();
+
   const [errorMessage, formAction, isPending] = useActionState(
     authenticate,
     undefined,
   );
  
   return (
+    <>
     <form action={formAction} className="space-y-3">
       <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
         <h1 className={`mb-3 text-2xl`}>
@@ -57,7 +58,7 @@ export default function LoginForm() {
             </div>
           </div>
         </div>
-        <input type="hidden" name="redirectTo" value={callbackUrl} />
+        <input type="hidden" name="redirectTo" value="/owner" />
         <button  className="mt-4 w-full" disabled={isPending} type="submit">
           {isPending ? 'Logging in...' : 'Log in'}
         </button>
@@ -74,5 +75,6 @@ export default function LoginForm() {
         </div>
       </div>
     </form>
+    </>
   );
 }
