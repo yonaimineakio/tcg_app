@@ -1,10 +1,10 @@
-export type User = { 
-    id: string;
-    name: string;
-    email: string;
-    hashedPassword: string;
-    isAdmin: boolean;
-};
+// export type User = { 
+//     id: string;
+//     name: string;
+//     email: string;
+//     hashedPassword: string;
+//     isAdmin: boolean;
+// };
 
 export type Store = {
     id: string;

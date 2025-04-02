@@ -1,4 +1,6 @@
-import type { User, CalendarEvent, CalendarDisplayEvent, CalendarDisplayEventsWithStoreInfo ,Store, Notification, UserAccount, UserEventParticipant} from '@/lib/definitions';
+// import type { User, CalendarEvent, CalendarDisplayEvent, CalendarDisplayEventsWithStoreInfo ,Store, Notification, UserAccount, UserEventParticipant} from '@/lib/definitions';
+import type { CalendarEvent, CalendarDisplayEvent, CalendarDisplayEventsWithStoreInfo ,Store, Notification, UserAccount, UserEventParticipant} from '@/lib/definitions';
+
 import sql from "@/db/db";
 
 
@@ -82,27 +84,27 @@ export async function getUserAccount(provider_account_id: string, provider: stri
     }
 }
 
-export async function getUser(email: string): Promise<User | null> {
-    try {
-        const result = await sql(`SELECT * FROM users WHERE email = $1`, [email])
+// export async function getUser(email: string): Promise<User | null> {
+//     try {
+//         const result = await sql(`SELECT * FROM users WHERE email = $1`, [email])
 
-        if (result.length === 0) return null;
+//         if (result.length === 0) return null;
     
-        const user: User = {
-            id: result[0].id,
-            name: result[0].name,
-            email: result[0].email,
-            hashedPassword: result[0].password,
-            isAdmin: result[0].isAdmin,
-        };
+//         const user: User = {
+//             id: result[0].id,
+//             name: result[0].name,
+//             email: result[0].email,
+//             hashedPassword: result[0].password,
+//             isAdmin: result[0].isAdmin,
+//         };
     
-        return user;
-    } catch (error) {
-        console.error(error);
-        throw new Error('Failed to fetch user');
-    } 
+//         return user;
+//     } catch (error) {
+//         console.error(error);
+//         throw new Error('Failed to fetch user');
+//     } 
 
-}
+// }
 
 export async function isSignedUpBefore(provider_account_id: string, provider: string): Promise<boolean> {
     try {

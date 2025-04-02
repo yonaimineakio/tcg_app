@@ -1,7 +1,7 @@
 // new
 'use server';
-import { signIn } from "@/auth";
-import { AuthError } from "next-auth";
+// import { signIn } from "@/auth";
+// import { AuthError } from "next-auth";
 import { v4 as uuidv4 } from "uuid";
 import sql from "@/db/db";
 import { z } from "zod";
@@ -43,21 +43,38 @@ async function uploadImage(formData: FormData, fieldName: string): Promise< {pub
 // ------------------------------
 // 認証
 // ------------------------------
-export async function authenticate(prevState: string | undefined, formData: FormData) {
-  try {
-    await signIn('credentials', formData);
-  } catch (error: unknown) {
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case 'CredentialsSignin':
-          return 'Invalid credentials.';
-        default:
-          return 'Something went wrong.';
-      }
-    }
-    throw error;
-  }
-}
+// export async function authenticate(prevState: string | undefined, formData: FormData) {
+//   try {
+
+//     const data = Object.fromEntries(formData.entries()) as {
+//       email: string;
+//       password: string;
+//       redirectTo?: string;
+//     };
+//     // サインイン処理
+//     const result = await signIn('credentials', {
+//       email: data.email,
+//       password: data.password,
+//       redirect: true, // ← リダイレクトさせたい場合は true
+//       callbackUrl: data.redirectTo || '/dashboard' // fallbackのURL
+//     });
+
+//     console.log('authenticate');
+//     console.log(formData);
+//     return;
+//     // await signIn('credentials', formData);
+//   } catch (error: unknown) {
+//     if (error instanceof AuthError) {
+//       switch (error.type) {
+//         case 'CredentialsSignin':
+//           return 'Invalid credentials.';
+//         default:
+//           return 'Something went wrong.';
+//       }
+//     }
+//     throw error;
+//   }
+// }
 // ------------------------------
 // Zod スキーマ定義
 // ------------------------------

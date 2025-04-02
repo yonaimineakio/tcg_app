@@ -1,12 +1,6 @@
-import type { NextAuthConfig, Session, User as NextAuthUser, AdapterUser, AdapterSession } from 'next-auth';
-import { JWT } from "next-auth/jwt";
-import { NextRequest } from 'next/server';
+import type { NextAuthConfig, User as NextAuthUser } from 'next-auth';
+// import { NextRequest } from 'next/server';
 import { createUserAccount, getUserAccount } from '@/lib/data';
-
-type CustomSession = Session & {
-  providerAccountId: string;
-  user: AdapterUser;
-} & AdapterSession;
 
 export const authConfig = {
   pages: {
@@ -18,7 +12,7 @@ export const authConfig = {
       console.log('signIn');
       console.log(user);
       console.log(account);
-      if(account.provider !== 'credentials') {
+      if(account.provider !== process.env.ADMIN_PROVIDER && account.providerAccountId !== process.env.ADMIN_PROVIDER_ACCOUNT_ID) {
         const existingUserAccount = await getUserAccount(account.providerAccountId, account.provider);
         console.log('existingUserAccount');
         console.log(existingUserAccount);
@@ -48,26 +42,30 @@ export const authConfig = {
       return token;
     },
 
-
-
-
-
-
-    async session({ session, token }:{ session: CustomSession; token: JWT }) {
-      session.user = token.user as NextAuthUser;
-      console.log("token.user", token.user);
-      session.user.providerAccountId = token.providerAccountId;
-      session.user.provider = token.provider;
+    async session({ session, token }) {
       console.log('session');
       console.log(session);
-      return session;
+      console.log(token);
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          providerAccountId: token.providerAccountId as string,
+          provider: token.provider as string,
+        }
+      };
     },
 
 
-    authorized({ auth, request: {nextUrl}}: {auth: Session | null, request: NextRequest}) {
-        const isLogin = !!auth?.user;
-        return isLogin;
-    }
+
+    // authorized({ auth, request: {nextUrl}}: {auth: Session | null, request: NextRequest}) {
+    //   console.log('authorized');
+    //   console.log(auth);
+    //   console.log(nextUrl);
+    //   const isLogin = !!auth?.user;
+    //   return isLogin;
+    // },
   },
+  
   providers: [],
 } satisfies NextAuthConfig;
