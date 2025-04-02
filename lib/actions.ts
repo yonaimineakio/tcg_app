@@ -18,7 +18,7 @@ async function uploadImage(formData: FormData, fieldName: string): Promise< {pub
   if (file && file.size > 0) {
     const filename = "image_" + uuidv4();
     const filenameEncoded = encodeURIComponent(filename);
-    const postRes = await fetch(`http://localhost:3000/api/upload_file?file=${filenameEncoded}`);
+    const postRes = await fetch(`${process.env.NEXTAUTH_URL}/api/upload_file?file=${filenameEncoded}`);
     const { url, fields } = await postRes.json();
     const uploadFormData = new FormData();
     Object.entries({ ...fields, file }).forEach(([key, value]) => {
@@ -31,7 +31,7 @@ async function uploadImage(formData: FormData, fieldName: string): Promise< {pub
     if (!uploadRes.ok) {
       throw new Error("Failed to upload image");
     } 
-    const getRes = await fetch(`http://localhost:3000/api/fetch_file?file=${filenameEncoded}`);
+    const getRes = await fetch(`${process.env.NEXTAUTH_URL}/api/fetch_file?file=${filenameEncoded}`);
     const { public_url } = await getRes.json();
     return {public_url: public_url};
 
