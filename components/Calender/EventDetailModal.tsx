@@ -1,14 +1,16 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { CalendarDisplayEventsWithStoreInfo, UserAccount } from '@/lib/definitions';
+import Link from 'next/link';
+import { EnrichedEvent, UserAccount } from '@/lib/definitions';
 import parseDaytoDisplay from "@/lib/utils";
 import Image from 'next/image';
 import { getParticipantUserAccounts, upsertParticipantEvent } from '@/lib/data';
 import { useSession } from 'next-auth/react';
+import UserImageDisplay from '@/components/UserImageDisplay';
 
 
 type EventDetailModalProps = {
-  event: CalendarDisplayEventsWithStoreInfo;
+  event: EnrichedEvent;
   onClose: () => void;
 }
 
@@ -58,10 +60,10 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
       </header>
       <main className="max-w-md mx-auto p-4">
         <div className="flex justify-center mt-4">
-          <Image width={128} height={128}className="w-10 h-10 rounded-full object-cover" src={event.store_image!} alt="Store" />
+          <Image width={128} height={128}className="w-10 h-10 rounded-full object-cover" src={event.extendedProps.storeImage} alt="Store" />
         </div>
         <div className="text-center mt-2">
-          <p className="text-sm font-semibold">{event.store_name}</p>
+          <p className="text-sm font-semibold">{event.extendedProps.storeName}</p>
         </div>
 
         <div className="bg-black text-white text-center mt-4 text-lg font-bold w-full">
@@ -69,7 +71,7 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
         </div>
 
         {/* <!-- 詳細リスト --> */}
-        <div className="mt-4 space-y-1 text-sm text-center">
+        <div className="mt-4 space-y-10 text-sm text-center">
           <p>{event.description}</p>
         </div>
 
@@ -77,14 +79,14 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
         <div className="mt-4 flex flex-col space-y-2">
           {/* <!-- 店舗ページボタン --> */}
           <button className="flex-1 py-2 bg-gray-300 rounded text-center text-sm">
-            店舗ページ
+            <Link href={`/user/stores/${event.extendedProps.storeId}`}>
+              店舗ページ
+            </Link>
           </button>
           {/* <!-- 興味あり --> */}
           <button onClick={
             async () => {
               if (event.id && session?.user.providerAccountId) {
-                console.log("イベントID", event.id);
-                console.log("ユーザーID", session.user.id);
                 if (!isParticipant) {
                   await upsertParticipantEvent({
                     event_id: event.id,
@@ -92,7 +94,6 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
                     status: 'interested'
                   });
                   setIsParticipant(true);
-                  console.log("興味あり");
                 } else {
                   await upsertParticipantEvent({
                     event_id: event.id,
@@ -100,7 +101,6 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
                     status: 'pending'
                   });
                   setIsParticipant(false);
-                  console.log("興味なし");
                 }
               }
             }
@@ -108,6 +108,9 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
            } className={`flex-1 py-2 ${isParticipant ? 'bg-green-300' : 'bg-yellow-300'} rounded text-center text-sm`}>
             興味あり
           </button>
+          <div className="flex flex-row space-x-2 justify-center items-center">
+              <UserImageDisplay users={participantUserAccounts} />
+          </div>
         </div>
 
         {/* <!-- 戻るボタン --> */}

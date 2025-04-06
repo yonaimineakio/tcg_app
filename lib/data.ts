@@ -1,7 +1,8 @@
 // import type { User, CalendarEvent, CalendarDisplayEvent, CalendarDisplayEventsWithStoreInfo ,Store, Notification, UserAccount, UserEventParticipant} from '@/lib/definitions';
-import type { CalendarEvent, CalendarDisplayEvent, CalendarDisplayEventsWithStoreInfo ,Store, Notification, UserAccount, UserEventParticipant} from '@/lib/definitions';
+import type { CalendarEvent, CalendarDisplayEvent, Store, Notification, UserAccount, UserEventParticipant, EventTypes, CalendarDisplayEventWithStoreInfo} from '@/lib/definitions';
 
 import sql from "@/db/db";
+
 
 
 export async function upsertParticipantEvent(participant: UserEventParticipant): Promise<void> {
@@ -23,11 +24,12 @@ export async function getParticipantUserAccounts(event_id: string): Promise<User
         const result = await sql(
             `
             SELECT 
-                user_accounts.id,
-                user_accounts.name,
-                user_accounts.image_url,
-                user_accounts.provider,
-                user_accounts.provider_account_id
+                DISTINCT
+                    user_accounts.id,
+                    user_accounts.name,
+                    user_accounts.image_url,
+                    user_accounts.provider,
+                    user_accounts.provider_account_id
             FROM 
                 user_accounts
             WHERE
@@ -176,7 +178,7 @@ export async function getEvents(): Promise<CalendarDisplayEvent[] | null> {
             start: date2String(event.startat),
             end: date2String(event.endat),
             store_id: event.store_id,
-            rrule: event.rrule 
+            rrule: event.rrule
         }));
 
         return events;
@@ -186,7 +188,7 @@ export async function getEvents(): Promise<CalendarDisplayEvent[] | null> {
     }
 }
 
-export async function getEventsWithStoreName(): Promise<CalendarDisplayEventsWithStoreInfo[] | null> {
+export async function getEventsWithStoreName(): Promise<CalendarDisplayEventWithStoreInfo[] | null> {
     try {
         const result = await sql(
             `SELECT events.*, stores.name as store_name, stores.image_url as store_image  FROM events
@@ -195,7 +197,7 @@ export async function getEventsWithStoreName(): Promise<CalendarDisplayEventsWit
 
         if (result.length === 0) return null;
 
-        const events: CalendarDisplayEventsWithStoreInfo[] = result.map(event => ({
+        const events: CalendarDisplayEventWithStoreInfo[] = result.map(event => ({
             id: event.id,
             title: event.title,
             description: event.description,
@@ -204,7 +206,8 @@ export async function getEventsWithStoreName(): Promise<CalendarDisplayEventsWit
             store_id: event.store_id,
             rrule: event.rrule,
             store_name: event.store_name,
-            store_image: event.store_image
+            store_image: event.store_image,
+            event_type: event.event_type
         }));
 
         return events;
@@ -214,7 +217,7 @@ export async function getEventsWithStoreName(): Promise<CalendarDisplayEventsWit
     }
 }
 
-export async function getEventByDayWithStoreName(date: string): Promise<CalendarDisplayEventsWithStoreInfo[] | null> {
+export async function getEventByDayWithStoreName(date: string): Promise<CalendarDisplayEventWithStoreInfo[] | null> {
     try {
         const result = await sql(`SELECT events.*, stores.name as store_name, stores.image_url as store_image FROM events
                                   JOIN stores ON events.store_id::uuid = stores.id
@@ -222,7 +225,7 @@ export async function getEventByDayWithStoreName(date: string): Promise<Calendar
 
         if (result.length === 0) return null;
 
-        const events: CalendarDisplayEventsWithStoreInfo[] = result.map(event => ({
+        const events: CalendarDisplayEventWithStoreInfo[] = result.map(event => ({
             id: event.id,
             title: event.title,
             description: event.description,
@@ -231,7 +234,8 @@ export async function getEventByDayWithStoreName(date: string): Promise<Calendar
             store_id: event.store_id,
             rrule: event.rrule,
             store_name: event.store_name,
-            store_image: event.store_image
+            store_image: event.store_image,
+            event_type: event.event_type
         }));
         console.log(events);
 
@@ -257,8 +261,8 @@ export async function getEvent(eventId: string): Promise<CalendarEvent | null> {
             endAt: date2String(result[0].endat),
             store_id: result[0].store_id,
             isrrule: result[0].isrrule,
-            rruleid: result[0].rruleid
-
+            rruleid: result[0].rruleid,
+            event_type: result[0].event_type
         };
 
         return event;
@@ -280,7 +284,8 @@ export async function getEventsByStore(store_id: string): Promise<CalendarEvent[
             startAt: date2String(event.startat),
             endAt: date2String(event.endat),
             store_id: event.store_id,
-            isrrule: event.isrrule
+            isrrule: event.isrrule,
+            event_type: event.event_type
         }));
 
         return events;
@@ -334,6 +339,24 @@ export async function getNotification(notificationId: string): Promise<Notificat
     catch (error) {
         console.error(error);
         throw new Error('Failed to fetch notification');
+    }
+}
+export async function getNotifications(): Promise<Notification[] | null> {
+    try {
+        const result = await sql(`SELECT * FROM notifications`)
+        return result.map(notification => ({
+            id: notification.id,
+            index: notification.index,
+            description: notification.description,
+            summary: notification.summary,
+            profile_image_url: notification.profile_image_url,
+            notify: notification.notify,
+            store_id: notification.store_id
+        }));
+    }
+    catch (error) { 
+        console.error(error);
+        throw new Error('Failed to fetch notifications');
     }
 }
 
@@ -393,6 +416,28 @@ export async function getNotification(notificationId: string): Promise<Notificat
 // }
 
 
+export async function getEventTypes(): Promise<EventTypes[] | null> {
+    try {
+        const result = await sql(`select
+                                    case
+                                        when name = 'ウィークリー' THEN 1
+                                        when name = 'シーズナル' THEN 2
+                                        WHEN name = 'テンポラリー' THEN 3
+                                        ELSE 4 END AS num,
+                                    name
+                                from
+                                    event_types;`)
+        if (result.length === 0) return null;
+        const eventTypes: EventTypes[] = result.map(eventType => ({
+            num: eventType.num,
+            name: eventType.name
+        }));
+        return eventTypes;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Failed to fetch event types');
+    }
+}
 
 function date2String(date: Date) {
     // if (!date) return

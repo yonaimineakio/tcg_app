@@ -1,7 +1,9 @@
-export default async function Page(props: {params : Promise<{id: string}>}) {
-  const params = await props.params
-  const id = params.id
-    return (
-      <h1>This is store show Page {id}</h1>
-    )
-  }
+// app/user/stores/[id]/page.tsx
+import StoreMypage from '@/components/store-mypage';
+
+
+export default async function Page(props: { params: Promise<{ id: string }> }) {
+  
+  const params = await props.params;
+  return <StoreMypage id={params.id} />
+}

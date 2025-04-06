@@ -91,6 +91,7 @@ export function generateRecurringEvents(
             store_id: '',
             isrrule: true,
             rruleid: recurrenceId,
+            event_type: '', // Add default event type
           });
         }
       }

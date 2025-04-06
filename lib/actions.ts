@@ -85,7 +85,8 @@ const EventFormSchema = z.object({
   endAt: z.string().nonempty(),
   store_id: z.string().nonempty(),
   isrrule: z.boolean(),
-  rruleid: z.string().optional()
+  rruleid: z.string().optional(),
+  event_type: z.string()
 });
 
 const EventArraySchema = z.array(EventFormSchema);
@@ -344,7 +345,8 @@ export async function createEvent(store_id: string, prevState: string | undefine
         endAt: event.endAt,
         store_id: store_id,
         isrrule: event.isrrule,
-        rruleid: event.rruleid
+        rruleid: event.rruleid,
+        event_type: formData.get("event_type") as string
       }
   ));
 
@@ -356,7 +358,7 @@ export async function createEvent(store_id: string, prevState: string | undefine
       await sql.transaction((tx) => {
         const promises: NeonQueryPromise<false, false>[] = parsedEvents.map((parsedEevent) =>{
           return tx(
-            `INSERT INTO events (title, description, startat, endat, store_id, isrrule, rruleid) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+            `INSERT INTO events (title, description, startat, endat, store_id, isrrule, rruleid, event_type) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
             [
               parsedEevent.title,
               parsedEevent.description,
@@ -364,7 +366,8 @@ export async function createEvent(store_id: string, prevState: string | undefine
               new Date(parsedEevent.endAt),
               store_id,
               true,
-              parsedEevent.rruleid
+              parsedEevent.rruleid,
+              parsedEevent.event_type
             ]
           )
         })
@@ -390,19 +393,21 @@ export async function createEvent(store_id: string, prevState: string | undefine
       startAt: formData.get("start"),
       endAt: (formData.get("start") as string).replace(/T.*/, "T23:59:59"),
       store_id: store_id,
-      isrrule: formData.get("isrrule") === "on" ? true : false
+      isrrule: formData.get("isrrule") === "on" ? true : false,
+      event_type: formData.get("event_type") as string
     });
     console.log("==formData==", formData);
     try {
       await sql(
-        `INSERT INTO events (title, description, startat, endat, store_id, isrrule) VALUES ($1, $2, $3, $4, $5, $6)`,
+        `INSERT INTO events (title, description, startat, endat, store_id, isrrule, event_type) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
         [
           parsedFormData.title,
           parsedFormData.description,
           new Date(parsedFormData.startAt),
           new Date(parsedFormData.endAt),
           parsedFormData.store_id,
-          parsedFormData.isrrule
+          parsedFormData.isrrule,
+          parsedFormData.event_type
         ]
       );
       console.log("Event creation success!");
@@ -523,18 +528,20 @@ export async function updateEvent(eventId: string, prevState: string | undefined
     startAt: formData.get("start"),
     endAt: (formData.get("start") as string).replace(/T.*/, "T23:59:59"),
     store_id: formData.get("store"), // 更新時は store_id は変更しない
-    isrrule: formData.get("isrrule") === "true" ? true : false
+    isrrule: formData.get("isrrule") === "true" ? true : false,
+    event_type: formData.get("event_type") || "その他"
   });
   console.log("==formData==", formData);
   try {
     await sql(
-      `UPDATE events SET title = $1, description = $2, startat = $3, endat = $4, isrrule = $5 WHERE id = $6`,
+      `UPDATE events SET title = $1, description = $2, startat = $3, endat = $4, isrrule = $5, event_type = $6 WHERE id = $7`,
       [
         parsedFormData.title,
         parsedFormData.description,
         new Date(parsedFormData.startAt),
         new Date(parsedFormData.endAt),
         parsedFormData.isrrule,
+        parsedFormData.event_type,
         eventId,
       ]
     );

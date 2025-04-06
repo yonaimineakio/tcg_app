@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState,useEffect } from 'react';
-import { Store, CalendarEvent } from '@/lib/definitions';
-import { getEventsByStore, getEvent } from '@/lib/data';
+import { Store, CalendarEvent, EventTypes  } from '@/lib/definitions';
+import { getEventsByStore, getEvent, getEventTypes  } from '@/lib/data';
 import { updateEvent } from '@/lib/actions';
 import { useActionState } from 'react';
 
@@ -12,15 +12,24 @@ export default function Form({stores}: {stores: Store[]}) {
   const [selectedEvents, setSelectedEvents] = useState<CalendarEvent[]>([]);
   const [selectedEventId, setselectedEventId ] = useState<string>('');
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
+  const [event_types, setEventTypes] = useState<EventTypes[]>([]);
+  const [event_type, setEventType] = useState<string>('');
   const updateEventWithId = updateEvent.bind(null, selectedEventId)
   const [ errorMessage, formAction, isPending] = useActionState(
     updateEventWithId, undefined
   ) 
 
   useEffect(() => {
+    getEventTypes().then((data) => {
+      if (data) {
+        setEventTypes(data)
+      }
+    })
+  }, [])
+
+  useEffect(() => { 
     getEventsByStore(selectedstore_id).then((data) => {
       if (data) {
-        console.log(data)
         console.log("selected")
         setSelectedEvents(data);
       }
@@ -39,15 +48,17 @@ export default function Form({stores}: {stores: Store[]}) {
     getEvent(selectedEventId).then((data) => {
       if (data) {
         setSelectedEvent(data);
+        setEventType(data.event_type);
       }
-  })}, [selectedEventId])
+    })
+  }, [selectedEventId])
 
   
 
 
   return (
     <div className="max-w-xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">イベント編集</h1>
+      <h1 className="text-2xl font-bold mb-4 text-center">イベント編集</h1>
       <form className="space-y-4" action={formAction}>
 
         {/* 店舗選択 */}
@@ -151,6 +162,27 @@ export default function Form({stores}: {stores: Store[]}) {
           name="isrrule"
           value={selectedEvent?.isrrule ? "true" : "false"}
         />
+        <div>
+
+          <label className="block font-medium mb-1">イベント属性</label>
+          <p>{event_type}</p>
+          <select
+            id="event_type"
+            name="event_type"
+            className="w-full border rounded px-3 py-2"
+            value={event_type}
+            onChange={(e) => {
+              setEventType(e.target.value);
+            }}
+            required
+          >
+            {event_types.map((eventType) => (
+              <option key={eventType.name} value={eventType.name}  >
+                {eventType.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
     {/* 繰り返し設定
     <div>

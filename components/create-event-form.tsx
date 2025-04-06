@@ -1,20 +1,32 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useActionState } from 'react';
 import { createEvent } from '@/lib/actions';
 import { Store } from '@/lib/definitions';
+import { EventTypes } from '@/lib/definitions';
+import { getEventTypes } from '@/lib/data';
 
 export default function Form({ stores }: { stores: Store[] }) {
   const initialStores = stores;
   const [isrrule, setRrule] = useState<boolean>(false);
   const [selectedstore_id, setSelectedstore_id] = useState<string>('');
+  const [event_types, setEventTypes] = useState<EventTypes[]>([]);
+  const [event_type, setEventType] = useState<string>('');
   const createEventWithStoreId = createEvent.bind(null, selectedstore_id);
   const [errorMessage, formAction, isPending] = useActionState(createEventWithStoreId, undefined);
 
+  useEffect(() => {
+      getEventTypes().then((data) => {
+        if(data) {
+          setEventTypes(data)
+        }
+      })
+  }, [])
+
   return (
     <div className="max-w-xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">イベント登録</h1>
+      <h1 className="text-2xl font-bold mb-4 text-center">イベント登録</h1>
       <form className="space-y-4" action={formAction}>
         {/* 店舗選択 */}
         <div>
@@ -80,6 +92,25 @@ export default function Form({ stores }: { stores: Store[] }) {
           </div>
         </div>
 
+        {/* イベントタイプ */}
+        <div>
+          <label className="block font-medium mb-1">イベント属性</label>
+          <select
+            id="event_type"
+            name="event_type"
+            className="w-full border rounded px-3 py-2"
+            value={event_type}
+            onChange = { (e) => setEventType(e.target.value)}
+            required
+          >
+            {event_types.map((eventType) => (
+              <option key={eventType.name} value={eventType.name}  >
+                {eventType.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {/* 繰り返し設定 */}
         <div>
           <div className="flex items-center space-x-2">
@@ -88,7 +119,6 @@ export default function Form({ stores }: { stores: Store[] }) {
               id="isrrule"
               name="isrrule"
               type="checkbox"
-              // value="yes"
               className="border rounded px-3 py-2"
               onChange={(e) => setRrule(e.target.checked)}
             />
