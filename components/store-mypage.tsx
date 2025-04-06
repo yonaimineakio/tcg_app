@@ -1,15 +1,28 @@
+'use client';
+
 import Image from 'next/image';
 import { getStore, getNotificationsByStore } from '@/lib/data';
+import { useEffect,useState} from 'react';
 import TruncatedDescription from '@/components/TruncatedDescription'; // パスは実際のファイル構造に合わせて調整してください
-
-export default async function StoreMypage(params: {id: string}) {
+import { Store, Notification } from '@/lib/definitions';
+export default function StoreMypage(params: {id: string}) {
   const id = params.id
   console.log("id", id);
-  const store = await getStore(id);
-  const notifications = await getNotificationsByStore(id);
+  const [store, setStore] = useState<Store | null>(null);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const store = await getStore(id);
+      const notifications = await getNotificationsByStore(id);
+      setStore(store);
+      setNotifications(notifications || []);
+    };
+    fetchData();
+  }, [id]);
 
   if (!store) {
-    return <div>店舗が見つかりません</div>
+    return 
   }
   
   return (
