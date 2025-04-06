@@ -12,20 +12,25 @@ export const authConfig = {
       console.log('signIn');
       console.log(user);
       console.log(account);
-      if(account.provider !== process.env.ADMIN_PROVIDER && account.providerAccountId !== process.env.ADMIN_PROVIDER_ACCOUNT_ID) {
-        const existingUserAccount = await getUserAccount(account.providerAccountId, account.provider);
-        console.log('existingUserAccount');
-        console.log(existingUserAccount);
-        if (!existingUserAccount) {
-          await createUserAccount({
-            id: user.id || '',
-            name: user.name || '',
-            image_url: user.image || '',
-            provider: account.provider || '',
-            provider_account_id: account.providerAccountId || ''
-          });
-        }  
-      } 
+
+
+      if(account.provider == process.env.ADMIN_PROVIDER && account.providerAccountId == process.env.ADMIN_PROVIDER_ACCOUNT_ID) {
+        return true;
+      }
+      
+      const existingUserAccount = await getUserAccount(account.providerAccountId, account.provider);
+      console.log('existingUserAccount');
+      console.log(existingUserAccount);
+      if (!existingUserAccount) {
+        await createUserAccount({
+          id: user.id || '',
+          name: user.name || '',
+          image_url: user.image || '',
+          provider: account.provider || '',
+          provider_account_id: account.providerAccountId || ''
+        });
+      }  
+      
       return true;
     },
 
