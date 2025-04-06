@@ -23,10 +23,6 @@ body {
 
 
 .fc {
-  display: flex;
-  width: 100%;                /* カレンダーの幅を調整 */
-  max-width: 1200px;       /* 最大幅を設定 */
-  background-color: #FFC0CB;   /* カレンダーの背景色 */
   border-radius: 30px;       /* 角を丸める */
   padding: 30px;             /* 内側の余白 */
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* 影をつけてデザイン性アップ */
@@ -36,10 +32,14 @@ body {
   display: flex;
   justify-content: flex-start !important;  /* タイトルを左寄せ */
   align-items: center;
-  padding-right: 400px;  /* 必要なら余白を調整 */
   font-size: 1.5rem;         /* タイトルの文字サイズを大きく */
   font-weight: bold;         /* 太字にする */
-  color:white;               /* 文字色を白に */
+  color: black;               /* 文字色を白に */
+}
+
+.fc-col-header {
+  background-color: black;
+  color: white;
 }
 
 .fc-col-header th:first-child { /* 日曜日 */
@@ -53,3 +53,6 @@ body {
 table.fc-scrollgrid  {
   background: white;         /* カレンダーの日付部分の背景色 */
 }
+
+/* etre */
+

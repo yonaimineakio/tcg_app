@@ -38,11 +38,7 @@ export type CalendarEvent = {
     store_id: string;
     isrrule: boolean;
     rruleid?: string;
-}
-
-export type CalendarDisplayEventsWithStoreInfo = CalendarDisplayEvent & {
-    store_name: string;
-    store_image?: string;
+    event_type: string;
 }
 
 
@@ -70,6 +66,27 @@ export type UserAccount = {
     provider_account_id: string;
 
 }
+
+export type EventTypes = {
+    num: number;
+    name: string;
+}
+
+export type CalendarDisplayEventWithStoreInfo = CalendarDisplayEvent & { store_name: string, store_image: string, event_type: string }
 // export type EventsParticipantsWithUserInfo = EventsParticipants & {
 //     user_image_url: string;
 // }
+
+export type EnrichedEvent = {
+    id: string;
+    title: string;
+    start: string;
+    description: string;
+    extendedProps: {
+      storeId: string;
+      storeName: string;
+      storeImage: string;
+      eventType: string;
+      color: string;
+    }
+  }

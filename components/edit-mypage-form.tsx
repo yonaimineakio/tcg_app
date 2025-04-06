@@ -54,7 +54,7 @@ export default function Form({stores}: {stores: Store[]}) {
 
     return (
     <div className="max-w-xl mx-auto p-4">
-        <h1 className="text-2xl font-bold mb-4">マイページ編集</h1>
+        <h1 className="text-2xl font-bold mb-4 text-center">マイページ編集</h1>
         <form className="space-y-4" action={formAction}>
         { /* 店舗選択 */ }
         <div>

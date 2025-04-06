@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { CalendarDisplayEventsWithStoreInfo } from '@/lib/definitions';
+import { EnrichedEvent } from '@/lib/definitions';
 import parseDaytoDisplay from "@/lib/utils";
 import EventDetailModal from '@/components/Calender/EventDetailModal';
 import Image from 'next/image';
 
 type EventListModalProps = {
-  events: CalendarDisplayEventsWithStoreInfo[];
+  events: EnrichedEvent[];
   onClose: () => void;
 };
 
@@ -15,7 +15,7 @@ export default function EventListModal({ events, onClose }: EventListModalProps)
   // slideIn state: コンポーネントマウント後にスライドアップをトリガーする
   const [slideIn, setSlideIn] = useState(false);
   const [eventDetailModal, setEventDetailModal] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState<CalendarDisplayEventsWithStoreInfo | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<EnrichedEvent | null>(null);
 
   useEffect(() => {
     // 背景スクロールをロック
@@ -65,9 +65,9 @@ export default function EventListModal({ events, onClose }: EventListModalProps)
                     </div>
                   </div>
                   <div className="flex items-center space-x-2 mt-2">
-                    <Image width={128} height={128} className="w-10 h-10 rounded-full object-cover" src={event.store_image!} alt="Store" />
+                    <Image width={128} height={128} className="w-10 h-10 rounded-full object-cover" src={event.extendedProps.storeImage} alt="Store" />
                       <div className="flex-1">
-                        <p className="text-sm font-semibold">店舗名: {event.store_name}</p>
+                        <p className="text-sm font-semibold">店舗名: {event.extendedProps.storeName}</p>
                       </div>
                       <button className="text-gray-600 text-xl">&gt;</button>
                   </div>                

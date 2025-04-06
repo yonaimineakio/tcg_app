@@ -11,7 +11,7 @@ export default function Form() {
 
   return (
     <div className="max-w-xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">店舗作成</h1>
+      <h1 className="text-2xl font-bold mb-4 text-center">店舗作成</h1>
       <form
         className="space-y-4"
         action={formAction}
