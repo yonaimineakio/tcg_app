@@ -24,6 +24,8 @@ export default function UserImageDisplay({ users }: { users: UserAccount[] }) {
               src={user.image_url || `/api/placeholder/32/32`}
               alt={user.name || `User ${index + 1}`}
               className="w-full h-full object-cover"
+              width={32}
+              height={32}
             />
           </div>
         ))}

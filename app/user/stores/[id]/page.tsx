@@ -1,7 +1,13 @@
 import StoreMypage from '@/components/store-mypage';
 
-export default function Page(props: {params: {id: string}}) {
-  const id = props.params.id
+type Props = {
+  params: {
+    id: string;
+  };
+};
+
+export default function Page(props: Props) {
+  const { id } = props.params;
   return (
     <StoreMypage id={id} />
   )
