@@ -31,6 +31,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     //         return null;
     //     },
     // }),
+    
     Twitter({
         clientId: process.env.TWITTER_CLIENT_ID,
         clientSecret: process.env.TWITTER_CLIENT_SECRET,
