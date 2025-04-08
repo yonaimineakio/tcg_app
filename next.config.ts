@@ -28,6 +28,13 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'abs.twimg.com',
+        port: '',
+        pathname: '/**',
+      },
+
     ],
   },
 
