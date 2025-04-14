@@ -10,6 +10,7 @@ import { useState, useEffect} from 'react';
 import type { EnrichedEvent, EventTypes } from '@/lib/definitions';
 import { getEventByDayWithStoreName, getEventTypes } from "@/lib/data";
 import { getEventsWithStoreName } from "@/lib/data";
+import Image from 'next/image';
 
 type EventTypeWithColor = EventTypes & { color: string }
 
@@ -144,16 +145,23 @@ useEffect(() => {
             titleFormat={{ month: 'long' }}
             events={ filteredEvents.length > 0 ? filteredEvents : events} 
             eventContent={(eventInfo) => {
+              const startTime = new Date(eventInfo.event.startStr).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
               return (
                 <div className="flex items-start gap-1 text-xs w-full break-words overflow-hidden">
-                <span className="text-white-500 shrink-0 mt-[2px]">●</span>
-                <div className="flex-1 min-w-0">
-                  <span className="font-bold block truncate sm:whitespace-normal sm:truncate-none" style={{ backgroundColor: eventTypes?.find((eventType) => eventType.name === eventInfo.event.extendedProps.eventType)?.color || '#ffffff' }}>
-                    {eventInfo.event.title}
-                  </span>
+                  <Image 
+                    src={eventInfo.event.extendedProps.storeImage || '/default-store.png'} 
+                    alt="store" 
+                    width={16}
+                    height={16}
+                    className="rounded-full object-cover"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <span className="font-bold block truncate sm:whitespace-normal sm:truncate-none" style={{ backgroundColor: eventTypes?.find((eventType) => eventType.name === eventInfo.event.extendedProps.eventType)?.color || '#ffffff' }}>
+                      {startTime}
+                    </span>
+                  </div>
                 </div>
-              </div>
-              )
+              );
             }}
             eventClick={handleEventClick}
           />

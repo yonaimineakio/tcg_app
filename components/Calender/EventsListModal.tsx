@@ -67,7 +67,7 @@ export default function EventListModal({ events, onClose }: EventListModalProps)
                   <div className="flex items-center space-x-2 mt-2">
                     <Image width={128} height={128} className="w-10 h-10 rounded-full object-cover" src={event.extendedProps.storeImage} alt="Store" />
                       <div className="flex-1">
-                        <p className="text-sm font-semibold">店舗名: {event.extendedProps.storeName}</p>
+                        <p className="text-sm font-semibold">イベント名: {event.title}</p>
                       </div>
                       <button className="text-gray-600 text-xl">&gt;</button>
                   </div>                
