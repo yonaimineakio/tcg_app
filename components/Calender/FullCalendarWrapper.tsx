@@ -52,30 +52,44 @@ export default function Calender() {
   }, []);
 
 
-  const handleEventClick = (info: EventClickArg) => {
-    setSelectedEvents(null)
-    const date = info.event.startStr.substring(0,10);
-    getEventByDayWithStoreName(date).then((data) => {
-      if (data) {
-        setSelectedEvents(data.map((event) => ({
-          id: event.id,
-          title: event.title,
-          start: event.start,
-          description: event.description,
-          extendedProps: {
-            storeId: event.store_id,
-            storeName: event.store_name,
-            storeImage: event.store_image,
-            eventType: event.event_type,
-            color: eventTypes?.find((eventType) => eventType.name === event.event_type)?.color || '#ffffff'
-          }
-        })));
+// ... existing code ...
+
+const handleEventClick = (info: EventClickArg) => {
+  setSelectedEvents(null);
+  const date = info.event.startStr.substring(0, 10);
+  getEventByDayWithStoreName(date).then((data) => {
+    if (data) {
+      // データを EnrichedEvent[] に変換
+      const enrichedData = data.map((event) => ({
+        id: event.id,
+        title: event.title,
+        start: event.start,
+        description: event.description,
+        extendedProps: {
+          storeId: event.store_id,
+          storeName: event.store_name,
+          storeImage: event.store_image,
+          eventType: event.event_type,
+          color: eventTypes?.find((eventType) => eventType.name === event.event_type)?.color || '#ffffff'
+        }
+      }));
+
+      // フィルタリングされたイベントがある場合は、同じイベントタイプのみを表示
+      if (filteredEvents.length > 0) {
+        const eventType = filteredEvents[0].extendedProps.eventType;
+        setSelectedEvents(enrichedData.filter(event => 
+          event.extendedProps.eventType === eventType
+        ));
+      } else {
+        // フィルタリングされていない場合は全てのイベントを表示
+        setSelectedEvents(enrichedData);
       }
     }
-  )
+  });
   setEventListModalVisible(true);
 };
 
+// ... existing code ...
 
 
 function filterEventsByEventType(eventType: EventTypes) {

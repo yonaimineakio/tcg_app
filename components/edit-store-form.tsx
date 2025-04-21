@@ -2,7 +2,7 @@
 
 import React  from 'react';
 import { useActionState } from 'react';
-import { updateStore } from '@/lib/actions';
+import { updateStore, deleteStore } from '@/lib/actions';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { Store } from '@/lib/definitions';
@@ -26,8 +26,11 @@ export default function Form({stores}: {stores: Store[]} ) {
     }
   )},[selectedstore_id]);
 
-
-
+  const handleDelete = async () => {
+    if (selectedstore_id) {
+      await deleteStore(selectedstore_id);
+    }
+  };
 
   return (
     <div className="max-w-xl mx-auto p-4">
@@ -142,19 +145,32 @@ export default function Form({stores}: {stores: Store[]} ) {
           />
         </div>
 
-        {/* 送信ボタン */}
-        <div>
+        {/* 送信ボタンと削除ボタン */}
+        <div className="flex gap-4">
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white px-4 py-2 rounded"
+            className="flex-1 bg-blue-500 text-white px-4 py-2 rounded"
           >
             {isPending ? '送信中...' : '確定'}
           </button>
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={!selectedstore_id}
+            className={`flex-1 px-4 py-2 rounded ${
+              selectedstore_id 
+                ? 'bg-red-500 text-white hover:bg-red-600' 
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
+          >
+            削除
+          </button>
         </div>
-      {/* エラーメッセージ表示 */}
-      {errorMessage && (
-        <p className="mt-2 text-red-500 text-center">{errorMessage}</p>
-      )}
+
+        {/* エラーメッセージ表示 */}
+        {errorMessage && (
+          <p className="mt-2 text-red-500 text-center">{errorMessage}</p>
+        )}
       </form>
     </div>
   );

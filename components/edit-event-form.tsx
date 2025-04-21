@@ -3,7 +3,7 @@
 import React, { useState,useEffect } from 'react';
 import { Store, CalendarEvent, EventTypes  } from '@/lib/definitions';
 import { getEventsByStore, getEvent, getEventTypes  } from '@/lib/data';
-import { updateEvent } from '@/lib/actions';
+import { updateEvent, deleteEvent } from '@/lib/actions';
 import { useActionState } from 'react';
 
 export default function Form({stores}: {stores: Store[]}) {
@@ -28,10 +28,18 @@ export default function Form({stores}: {stores: Store[]}) {
   }, [])
 
   useEffect(() => { 
+    if (selectedstore_id === '') {
+      setSelectedEvents([]);
+      return 
+    }
+
     getEventsByStore(selectedstore_id).then((data) => {
       if (data) {
         console.log("selected")
         setSelectedEvents(data);
+      } else {
+        console.log("No events fetched")
+        setSelectedEvents([]);
       }
       setselectedEventId('');
       setSelectedEvent(null)
@@ -53,8 +61,11 @@ export default function Form({stores}: {stores: Store[]}) {
     })
   }, [selectedEventId])
 
-  
-
+  const handleDelete = async () => {
+    if (selectedEventId) {
+      await deleteEvent(selectedEventId);
+    }
+  };
 
   return (
     <div className="max-w-xl mx-auto p-4">
@@ -273,15 +284,31 @@ export default function Form({stores}: {stores: Store[]}) {
     */}
 
       
-        <div>
-          <button type="submit" className="w-full bg-blue-500 text-white px-4 py-2 rounded">
-          {isPending ? '送信中‥‥' : '確定'}
+        <div className="flex gap-4">
+          <button
+            type="submit"
+            className="flex-1 bg-blue-500 text-white px-4 py-2 rounded"
+          >
+            {isPending ? '送信中...' : '確定'}
+          </button>
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={!selectedEventId}
+            className={`flex-1 px-4 py-2 rounded ${
+              selectedEventId 
+                ? 'bg-red-500 text-white hover:bg-red-600' 
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
+          >
+            削除
           </button>
         </div>
-      {/* エラーメッセージ表示 */}
-      {errorMessage && (
-        <p className="mt-2 text-red-500 text-center">{errorMessage}</p>
-      )}
+
+        {/* エラーメッセージ表示 */}
+        {errorMessage && (
+          <p className="mt-2 text-red-500 text-center">{errorMessage}</p>
+        )}
       </form>
 
     </div>

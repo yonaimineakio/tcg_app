@@ -63,7 +63,7 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
           <Image width={128} height={128}className="w-10 h-10 rounded-full object-cover" src={event.extendedProps.storeImage} alt="Store" />
         </div>
         <div className="text-center mt-2">
-          <p className="text-sm font-semibold">{event.extendedProps.storeName}</p>
+          <p className="text-sm font-semibold">{event.title}</p>
         </div>
 
         <div className="bg-black text-white text-center mt-4 text-lg font-bold w-full">
@@ -105,7 +105,7 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
               }
             }
 
-           } className={`flex-1 py-2 ${isParticipant ? 'bg-green-300' : 'bg-yellow-300'} rounded text-center text-sm`}>
+           } className={`flex-1 py-2 ${isParticipant ? 'bg-blue-500' : 'bg-yellow-300'} rounded text-center text-sm`}>
             興味あり
           </button>
           <div className="flex flex-row space-x-2 justify-center items-center">
