@@ -561,3 +561,43 @@ export async function updateEvent(eventId: string, prevState: string | undefined
   revalidatePath('/owner/event/edit');
   redirect('/owner');
 }
+
+export async function deleteStore(storeId: string) {
+  try {
+    await sql(`DELETE FROM stores WHERE id = $1`, [storeId]);
+    console.log("Store deletion success!");
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return JSON.stringify({
+        success: false,
+        error: { message: error.message, stack: error.stack }
+      });
+    }
+    return JSON.stringify({
+      success: false,
+      error: { message: "Unknown error", stack: "" }
+    });
+  }
+  revalidatePath('/owner/store/edit');
+  redirect('/owner');
+}
+
+export async function deleteEvent(eventId: string) {
+  try {
+    await sql(`DELETE FROM events WHERE id = $1`, [eventId]);
+    console.log("Event deletion success!");
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return JSON.stringify({
+        success: false,
+        error: { message: error.message, stack: error.stack }
+      });
+    }
+    return JSON.stringify({
+      success: false,
+      error: { message: "Unknown error", stack: "" }
+    });
+  }
+  revalidatePath('/owner/event/edit');
+  redirect('/owner');
+}

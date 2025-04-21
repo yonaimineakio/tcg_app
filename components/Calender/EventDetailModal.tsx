@@ -63,7 +63,7 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
           <Image width={128} height={128}className="w-10 h-10 rounded-full object-cover" src={event.extendedProps.storeImage} alt="Store" />
         </div>
         <div className="text-center mt-2">
-          <p className="text-sm font-semibold">{event.extendedProps.storeName}</p>
+          <p className="text-sm font-semibold">{event.title}</p>
         </div>
 
         <div className="bg-black text-white text-center mt-4 text-lg font-bold w-full">
