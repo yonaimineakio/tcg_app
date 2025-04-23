@@ -1,28 +1,6 @@
-// import { RRuleData } from "@/lib/definitions";
 import { CalendarEvent } from "@/lib/definitions";
 import { v4 as uuidv4 } from 'uuid';
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
-  
 
-// クラス名をマージする関数
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
-
-// export function parseRRuleDateLocal(rruleDate: string): string {
-//     // 例: "20250315T120200Z"
-//     const year = parseInt(rruleDate.substring(0, 4), 10).toString().padStart(2, "0");
-//     const month = parseInt(rruleDate.substring(4, 6), 10).toString().padStart(2, "0");
-//     const day = parseInt(rruleDate.substring(6, 8), 10).toString().padStart(2, "0");
-//     const hours = parseInt(rruleDate.substring(9, 11), 10).toString().padStart(2, "0");
-//     const minutes = parseInt(rruleDate.substring(11, 13), 10).toString().padStart(2, "0");
-//     const seconds = parseInt(rruleDate.substring(13, 15), 10).toString().padStart(2, "0");
-//     return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
-//   }
-
-
-// ここで前提となるヘルパー関数も定義しておく
 function weekdayStringToNumber(day: string): number {
   const map: Record<string, number> = {
     SU: 0,
@@ -63,7 +41,6 @@ export function generateRecurringEvents(
   byweekday: string[]
 ): CalendarEvent[] {
   const events: CalendarEvent[] = [];
-  // すべてのイベントに共通のIDを生成
   const recurrenceId = 'recurrence-' + uuidv4();
 
   const startDate = new Date(startDateStr);
@@ -88,7 +65,7 @@ export function generateRecurringEvents(
           eventDate.setHours(startHours, startMinutes, startSeconds, 0);
           const endDate = new Date(eventDate.getTime() + 60 * 60 * 1000);
           events.push({
-            id: recurrenceId, // すべて同じID
+            id: recurrenceId,
             title: '',
             description: '',
             startAt: eventDate.toISOString(),
@@ -96,7 +73,7 @@ export function generateRecurringEvents(
             store_id: '',
             isrrule: true,
             rruleid: recurrenceId,
-            event_type: '', // Add default event type
+            event_type: '',
           });
         }
       }
@@ -105,22 +82,4 @@ export function generateRecurringEvents(
     weekCount++;
   }
   return events;
-}
-
-export default function parseDaytoDisplay (rawdate: string): string {
-
-  const date = new Date(rawdate);
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-  const week = date.getDay();
-  const weeklist = ["日", "月", "火", "水", "木", "金", "土"];
-  const weekname = weeklist[week];
-  const hour = date.getHours();
-  const minute = date.getMinutes();
-  return `${month}月${day}日(${weekname}) ${hour}時${minute}分`;
-
-}  
-// loadingテスト用の関数
-// export function delay(ms: number): Promise<void> {
-//   return new Promise((resolve) => setTimeout(resolve, ms));
-// }
+} 

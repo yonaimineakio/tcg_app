@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { EnrichedEvent, UserAccount } from '@/lib/definitions';
-import parseDaytoDisplay from "@/lib/utils";
+import { parseDaytoDisplay } from "@/lib/calendar/formatters";
 import Image from 'next/image';
 import { getParticipantUserAccounts, upsertParticipantEvent } from '@/lib/data';
 import { useSession } from 'next-auth/react';
