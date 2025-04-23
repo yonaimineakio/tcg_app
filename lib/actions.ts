@@ -7,7 +7,7 @@ import sql from "@/db/db";
 import { z } from "zod";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { generateRecurringEvents } from "@/lib/utils";
+import { generateRecurringEvents } from "@/lib/calendar/generators";
 import { CalendarEvent } from "./definitions";
 import { NeonQueryPromise } from "@neondatabase/serverless";
 // ------------------------------
