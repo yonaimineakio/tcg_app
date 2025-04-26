@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TCG App
 
-## Getting Started
+TCG（トレーディングカードゲーム）アプリケーションです。Next.jsを使用して構築されたモダンなWebアプリケーションです。
 
-First, run the development server:
+## 技術スタック
 
+- **フロントエンド**
+  - Next.js 15.2.0
+  - React 18.3.1
+  - TailwindCSS
+  - Radix UI
+  - Font Awesome
+
+- **バックエンド**
+  - Next.js API Routes
+  - Prisma
+  - Neon Database (PostgreSQL)
+  - NextAuth.js
+
+- **その他の主要なライブラリ**
+  - FullCalendar
+  - Zod (バリデーション)
+  - Argon2 (パスワードハッシュ化)
+
+## 開発環境のセットアップ
+
+1. リポジトリのクローン
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone [repository-url]
+cd tcg_app
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. 依存関係のインストール
+```bash
+pnpm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. 環境変数の設定
+`.env`ファイルを作成し、必要な環境変数を設定します。
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. データベースのセットアップ
+```bash
+pnpm prisma generate
+pnpm prisma db push
+```
 
-## Learn More
+5. 開発サーバーの起動
+```bash
+pnpm dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+## 主な機能
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- カード管理
+- カレンダー機能
+- ユーザー認証
+- データベース連携
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## デプロイ
 
-## Deploy on Vercel
+Vercelを使用してデプロイされています。
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## ライセンス
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+[MIT License](LICENSE)
