@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { EnrichedEvent } from '@/lib/definitions';
 import { parseDaytoDisplay } from "@/lib/calendar/formatters";
-import EventDetailModal from '@/components/Calender/EventDetailModal';
+import EventDetailModal from '@/components/Calendar/EventDetailModal';
 import Image from 'next/image';
 
 type EventListModalProps = {

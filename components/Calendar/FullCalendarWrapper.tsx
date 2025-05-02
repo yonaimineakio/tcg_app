@@ -5,7 +5,7 @@ import { EventClickArg } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import rrulePlugin from '@fullcalendar/rrule';
 import interactionPlugin from "@fullcalendar/interaction";
-import EventListModal from "@/components/Calender/EventsListModal"
+import EventListModal from "@/components/Calendar/EventsListModal"
 import { useState, useEffect} from 'react';
 import type { EnrichedEvent, EventTypes } from '@/lib/definitions';
 import { getEventByDayWithStoreName, getEventTypes } from "@/lib/data";

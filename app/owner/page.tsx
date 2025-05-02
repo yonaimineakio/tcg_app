@@ -1,11 +1,11 @@
-import Calender from '@/components/Calender/FullCalendarWrapper';
+import FullCalendarWrapper from '@/components/Calendar/FullCalendarWrapper';
 
 export default function Page() {
 
   
       return (
         <div>
-            <Calender/>
+            <FullCalendarWrapper/>
         </div>
       )
 }
