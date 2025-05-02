@@ -1,69 +1,104 @@
 'use client';
 
-import React, { useState,useEffect } from 'react';
-import { Store, CalendarEvent, EventTypes  } from '@/lib/definitions';
-import { getEventsByStore, getEvent, getEventTypes  } from '@/lib/data';
+import React, { useState, useEffect } from 'react';
+import { Store, CalendarEvent, EventTypes } from '@/lib/definitions';
+import { getEventsByStore, getEvent, getEventTypes } from '@/lib/data';
 import { updateEvent, deleteEvent } from '@/lib/actions';
 import { useActionState } from 'react';
 
-export default function Form({stores}: {stores: Store[]}) {
+type EventFormState = {
+  store_id: string;
+  events: CalendarEvent[];
+  event_id: string;
+  event: CalendarEvent | null;
+  event_types: EventTypes[];
+  event_type: string;
+};
 
-  const [selectedstore_id, setSelectedstore_id] = useState<string>('');
-  const [selectedEvents, setSelectedEvents] = useState<CalendarEvent[]>([]);
-  const [selectedEventId, setselectedEventId ] = useState<string>('');
-  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
-  const [event_types, setEventTypes] = useState<EventTypes[]>([]);
-  const [event_type, setEventType] = useState<string>('');
-  const updateEventWithId = updateEvent.bind(null, selectedEventId)
-  const [ errorMessage, formAction, isPending] = useActionState(
-    updateEventWithId, undefined
-  ) 
+export default function Form({ stores }: { stores: Store[] }) {
+  const [formState, setFormState] = useState<EventFormState>({
+    store_id: '',
+    events: [],
+    event_id: '',
+    event: null,
+    event_types: [],
+    event_type: '',
+  });
 
-  useEffect(() => {
-    getEventTypes().then((data) => {
-      if (data) {
-        setEventTypes(data)
-      }
-    })
-  }, [])
-
-  useEffect(() => { 
-    if (selectedstore_id === '') {
-      setSelectedEvents([]);
-      return 
-    }
-
-    getEventsByStore(selectedstore_id).then((data) => {
-      if (data) {
-        console.log("selected")
-        setSelectedEvents(data);
-      } else {
-        console.log("No events fetched")
-        setSelectedEvents([]);
-      }
-      setselectedEventId('');
-      setSelectedEvent(null)
-    }
-
-  )}, [selectedstore_id])
+  const updateEventWithId = updateEvent.bind(null, formState.event_id);
+  const [errorMessage, formAction, isPending] = useActionState(
+    updateEventWithId,
+    undefined
+  );
 
   useEffect(() => {
-    if (selectedEventId === '') {
-      setSelectedEvent(null);
+    const fetchEventTypes = async () => {
+      try {
+        const data = await getEventTypes();
+        if (data) {
+          setFormState(prev => ({ ...prev, event_types: data }));
+        }
+      } catch (error) {
+        console.error('Failed to fetch event types:', error);
+      }
+    };
+    fetchEventTypes();
+  }, []);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      if (formState.store_id === '') {
+        setFormState(prev => ({ ...prev, events: [], event_id: '', event: null }));
+        return;
+      }
+
+      try {
+        const data = await getEventsByStore(formState.store_id);
+        if (data) {
+          setFormState(prev => ({
+            ...prev,
+            events: data,
+            event_id: '',
+            event: null,
+          }));
+        } else {
+          setFormState(prev => ({
+            ...prev,
+            events: [],
+            event_id: '',
+            event: null,
+          }));
+        }
+      } catch (error) {
+        console.error('Failed to fetch events:', error);
+        setFormState(prev => ({
+          ...prev,
+          events: [],
+          event_id: '',
+          event: null,
+        }));
+      }
+    };
+
+    fetchEvents();
+  }, [formState.store_id]);
+
+  useEffect(() => {
+    if (formState.event_id === '') {
+      setFormState(prev => ({ ...prev, event: null }));
       return;
     }
-    console.log(selectedEventId)
-    getEvent(selectedEventId).then((data) => {
+    console.log(formState.event_id)
+    getEvent(formState.event_id).then((data) => {
       if (data) {
-        setSelectedEvent(data);
-        setEventType(data.event_type);
+        setFormState(prev => ({ ...prev, event: data, event_type: data.event_type }));
       }
     })
-  }, [selectedEventId])
+  }, [formState.event_id])
 
   const handleDelete = async () => {
-    if (selectedEventId) {
-      await deleteEvent(selectedEventId);
+    if (formState.event_id) {
+      await deleteEvent(formState.event_id);
     }
   };
 
@@ -82,9 +117,9 @@ export default function Form({stores}: {stores: Store[]}) {
             name="store"
             className="w-full border rounded px-3 py-2"
             required
-            value={selectedstore_id}
+            value={formState.store_id}
             onChange={(e) => {
-              setSelectedstore_id(e.target.value);
+              setFormState(prev => ({ ...prev, store_id: e.target.value }));
             }}
           >
             <option value="">選択してください</option>
@@ -107,11 +142,11 @@ export default function Form({stores}: {stores: Store[]}) {
             className="w-full border rounded px-3 py-2"
             required
             onChange={(e) => {
-              setselectedEventId(e.target.value);
+              setFormState(prev => ({ ...prev, event_id: e.target.value }));
             }}
           >
             <option value="">選択してください</option>
-            {selectedEvents.map((event) => (
+            {formState.events.map((event) => (
               <option key={event.id} value={event.id}>
                 {event.title}
               </option>
@@ -129,7 +164,7 @@ export default function Form({stores}: {stores: Store[]}) {
             id="title"
             type="text"
             name="title"
-            defaultValue={ selectedEvent?.title}
+            defaultValue={formState.event?.title}
             className="w-full border rounded px-3 py-2"
             placeholder="イベントタイトル"
             required
@@ -144,7 +179,7 @@ export default function Form({stores}: {stores: Store[]}) {
           <textarea
             id="description"
             name='description'
-            defaultValue={selectedEvent?.description}
+            defaultValue={formState.event?.description}
             className="w-full border rounded px-3 py-2"
             placeholder="イベントの詳細情報"
             rows={4}
@@ -158,8 +193,7 @@ export default function Form({stores}: {stores: Store[]}) {
             <input
               id="start"
               name="start"
-              defaultValue={selectedEvent?.startAt
-              }
+              defaultValue={formState.event?.startAt}
               type="datetime-local"
               className="border rounded px-3 py-2"
               required
@@ -171,23 +205,23 @@ export default function Form({stores}: {stores: Store[]}) {
           type="hidden"
           id="isrrule"
           name="isrrule"
-          value={selectedEvent?.isrrule ? "true" : "false"}
+          value={formState.event?.isrrule ? "true" : "false"}
         />
         <div>
 
           <label className="block font-medium mb-1">イベント属性</label>
-          <p>{event_type}</p>
+          <p>{formState.event_type}</p>
           <select
             id="event_type"
             name="event_type"
             className="w-full border rounded px-3 py-2"
-            value={event_type}
+            value={formState.event_type}
             onChange={(e) => {
-              setEventType(e.target.value);
+              setFormState(prev => ({ ...prev, event_type: e.target.value }));
             }}
             required
           >
-            {event_types.map((eventType) => (
+            {formState.event_types.map((eventType) => (
               <option key={eventType.name} value={eventType.name}  >
                 {eventType.name}
               </option>
@@ -294,9 +328,9 @@ export default function Form({stores}: {stores: Store[]}) {
           <button
             type="button"
             onClick={handleDelete}
-            disabled={!selectedEventId}
+            disabled={!formState.event_id}
             className={`flex-1 px-4 py-2 rounded ${
-              selectedEventId 
+              formState.event_id 
                 ? 'bg-red-500 text-white hover:bg-red-600' 
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
             }`}
