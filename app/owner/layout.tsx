@@ -1,10 +1,10 @@
-import SideBar from "@/components/sideBar";
+import Sidebar from '@/components/sidebar';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     return (
         <div className="h-screen justify-center w-full">
             {/* サイドバー */}
-            <SideBar />
+            <Sidebar />
 
             {children}
         </div>

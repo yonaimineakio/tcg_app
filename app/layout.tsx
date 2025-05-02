@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Roboto_Mono } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/Header";
+import Header from '@/components/header';
 import { SessionProvider } from "next-auth/react";
 
 const inter = Inter({

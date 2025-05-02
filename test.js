@@ -1,0 +1,5 @@
+GCP_APPLICATION_CREDENTIALS='{\"type\": \"service_account\", \"project_id\": \"tcg-project-452913\", \"private_key_id\": \"d60bd7df85a29ee9c1b3f47ead3a513fecc69c76\", \"private_key\": \"-----BEGIN PRIVATE KEY-----\\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC1mV6UQ8e04MLA\\nOq51sSh668DE1Lpt0ODi1xsWNScMxg1tsxr241qod97JScM6UUwEwy40SnGwoY3X\\n...-----END PRIVATE KEY-----\\n\", \"client_email\": \"tcg-project-gcs-upload@tcg-project-452913.iam.gserviceaccount.com\", \"client_id\": \"117817644204007575247\", \"auth_uri\": \"https://accounts.google.com/o/oauth2/auth\", \"token_uri\": \"https://oauth2.googleapis.com/token\", \"auth_provider_x509_cert_url\": \"https://www.googleapis.com/oauth2/v1/certs\", \"client_x509_cert_url\": \"https://www.googleapis.com/robot/v1/metadata/x509/tcg-project-gcs-upload%40tcg-project-452913.iam.gserviceaccount.com\", \"universe_domain\": \"googleapis.com\"}'
+
+
+console.log(JSON.parse(GCP_APPLICATION_CREDENTIALS))
+console.log(typeof JSON.parse(GCP_APPLICATION_CREDENTIALS))
